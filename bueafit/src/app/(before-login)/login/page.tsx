@@ -18,21 +18,40 @@ export default function Page() {
     }
 
     const login = async () => {
-        const response = await fetch(`http://175.212.136.236:3001/auth/login`, {
-            method: "POST",
-            // body: formData
-            body: new URLSearchParams({
-                "username" : email,
-                "password" : pw,
-                "grant_type" : "password"
-            })            
-        });
-        const data = response;
-        if(data.status === 200) {
-            route.push('/selectstore')
+        try{
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/login`, {
+                method: "POST",
+                // body: formData
+                body: new URLSearchParams({
+                    "username" : email,
+                    "password" : pw,
+                    "grant_type" : "password"
+                })            
+            });
+            const data = response;
+
+            // 아이디나 비밀번호 안적었을 때
+            if(!email || !pw){
+                alert('이메일이나 비밀번호를 적어주세요.')
+                return;
+            }
+
+            if(data.status === 200) {
+                route.push('/selectstore')
+            }
+            if(data.status === 401) {
+                alert('이메일이나 비밀번호가 틀렸습니다.')            
+            }
+
+        }catch(error){
+            console.error(error)
         }
-        if(data.status === 401) {
-            alert('이메일이나 비밀번호가 틀렸습니다.')            
+    }
+
+    // 엔터키로 로그인 추가
+    const enterLogin = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if(e.key === 'Enter') {
+            login()
         }
     }
 
@@ -51,6 +70,7 @@ export default function Page() {
             className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2`}
             value={email}
             placeholder="solee9802@gmail.com"
+            onKeyDown={(e) => enterLogin(e)}
             onChange={handleEmail}
             />
 
@@ -66,6 +86,7 @@ export default function Page() {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-300"
             value={pw}
             placeholder="123456"
+            onKeyDown={(e) => enterLogin(e)}
             onChange={handlePw}
           />
         </div>

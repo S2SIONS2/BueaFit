@@ -55,7 +55,7 @@ export default function Page() {
     
         // 2. 유효한 이메일이면 서버에 중복 체크 요청
         try {
-            const res = await fetch(`http://175.212.136.236:3001/users/exists/email?email=${email}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/users/exists/email?email=${email}`);
             const data = await res.json();
     
             if (data.exists === false) {
@@ -81,7 +81,7 @@ export default function Page() {
         }
         
         try{
-            const res = await fetch(`http://175.212.136.236:3001/users/`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/users/`, {
                 method: "POST",
                 headers: {
                     'Content-Type' : 'application/json'
@@ -102,7 +102,6 @@ export default function Page() {
                 alert('회원가입이 완료되었습니다.');
                 router.push('/login');
             }
-            console.log(res);
         }catch(error){
             console.error(error)
         }
