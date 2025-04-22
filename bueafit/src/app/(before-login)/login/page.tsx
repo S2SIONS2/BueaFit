@@ -19,16 +19,21 @@ export default function Page() {
 
     const login = async () => {
         try{
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/login`, {
+            const response = await fetch('/api/auth/token', {
                 method: "POST",
-                // body: formData
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
                 body: new URLSearchParams({
                     "username" : email,
                     "password" : pw,
                     "grant_type" : "password"
-                })            
+                }),
+                // redirect: 'manual',
             });
             const data = response;
+            const jsonData = await data.json();
 
             // 아이디나 비밀번호 안적었을 때
             if(!email || !pw){
@@ -37,7 +42,10 @@ export default function Page() {
             }
 
             if(data.status === 200) {
-                route.push('/selectstore')
+              const access_token = jsonData.access_token;
+              document.cookie = `access_token=${access_token}; path=/`;
+
+              route.push('/selectstore')
             }
             if(data.status === 401) {
                 alert('이메일이나 비밀번호가 틀렸습니다.')            

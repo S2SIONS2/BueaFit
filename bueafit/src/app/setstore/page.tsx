@@ -1,7 +1,7 @@
 export default function Page() {
     return (
-        <div className="Main">
-            main
+        <div>
+            가게 등록
         </div>
     )
 }
