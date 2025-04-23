@@ -1,6 +1,29 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function Page() {
+export default async function Page() {
+    // 액세스 토큰
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('access_token')?.value;
+
+    // 가게 선택
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization' : `Bearer ${accessToken}`
+
+        },
+        credentials: 'include'
+    })
+    const data = await response.json();
+
+    // 선택할 가게가 없을 때
+    if (data.length === 0) {
+        return redirect('/setstore')
+    }
+    
     return (
         <section className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md">
@@ -16,7 +39,6 @@ export default function Page() {
                             BUEALINE
                         </Link>
                     </li>
-                    {/* 다른 가게들 추가할 수 있음 */}
                     {/* <li>
                         <Link
                             href="/store/anotherstore"

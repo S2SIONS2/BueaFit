@@ -25,6 +25,13 @@ export async function middleware(request: NextRequest) {
     return;
   }
 
+  // 로그인 직후 가게 선택 시
+  if(pathname === '/selectstore') {
+    // 선택 할 가게가 없을 때
+    // 가게 선택 후
+    return;
+  }
+
   // access_token이 없으면 refresh 시도
   const refreshToken = request.cookies.get('refresh_token')?.value
 
@@ -66,6 +73,8 @@ export async function middleware(request: NextRequest) {
   loginUrl.pathname = '/login'
   return NextResponse.redirect(loginUrl)
 }
+
+
 
 // 미들웨어가 동작할 경로 설정
 export const config = {
