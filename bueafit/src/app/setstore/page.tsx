@@ -1,9 +1,10 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function StoreRegistrationPage() {
     // router
@@ -55,10 +56,33 @@ export default function StoreRegistrationPage() {
         }
     };
 
+    // 가게 정보 가져오기
+    const accessToken = useAuthStore((state) => state.accessToken);
+    const [shopList, setShopList] = useState([]);
+
+    const fetchStoreInfo = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Bearer ${accessToken}`
+            },
+        });
+        const data = await response.json();
+        if(data.length > 0) {
+            setShopList(data);
+        }
+    }
+
+    useEffect(() => {
+        fetchStoreInfo()
+    }, [])
+
     const renderIntroSteps = () => (
         <div className="absolute inset-0 bg-gray-50 bg-opacity-40 flex items-center justify-center z-10">
             <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full text-center">
-                {step === 1 && (
+                {step === 1 && shopList.length == 0 &&(
                     <>
                     <h2 className="text-xl font-bold mb-4">안녕하세요 사장님! 👋</h2>
                     <p className="text-gray-600 mb-6">BueaFit 사용이 처음이시군요!</p>
@@ -70,7 +94,7 @@ export default function StoreRegistrationPage() {
                     </button>
                     </>
                 )}
-                {step === 2 && (
+                {step === 2 && shopList.length == 0 &&(
                     <>
                     <h2 className="text-xl font-bold mb-4">등록된 가게 정보가 없어요.</h2>
                     <p className="text-gray-600 mb-6">가게 등록을 위한 작성을 부탁드려요.</p>

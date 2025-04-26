@@ -3,23 +3,29 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Page() {
     const [email, setEmail] = useState('solee9802@gmail.com'); // 이메일 기본 등록
     const [pw, setPw] = useState('123456'); // 비밀번호 기본 등록
+    const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
+    // route 
     const route = useRouter();
 
+    // email handler
     const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
     }
+    // password handler
     const handlePw = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPw(e.target.value);
     }
 
+    // 로그인 구현
     const login = async () => {
         try{
-            const response = await fetch('/api/auth/token', {
+            const response = await fetch('/api/auth/login', {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -29,8 +35,7 @@ export default function Page() {
                     "username" : email,
                     "password" : pw,
                     "grant_type" : "password"
-                }),
-                // redirect: 'manual',
+                }),                
             });
             const data = response;
             const jsonData = await data.json();
@@ -42,8 +47,12 @@ export default function Page() {
             }
 
             if(data.status === 200) {
+              // 쿠키에 access_token 저장
               const access_token = jsonData.access_token;
               document.cookie = `access_token=${access_token}; path=/`;
+
+              // zustand store에 access_token 저장
+              setAccessToken(access_token);
 
               route.push('/selectstore')
             }
