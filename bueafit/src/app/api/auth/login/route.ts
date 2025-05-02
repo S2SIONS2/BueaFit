@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     return response;
 
   } catch (err) {
-    console.error("❌ route.ts 에러 발생:", err);
+    console.error("route.ts 에러 발생:", err);
     return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 }

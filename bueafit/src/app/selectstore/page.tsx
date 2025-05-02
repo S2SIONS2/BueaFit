@@ -8,13 +8,13 @@ export default async function Page() {
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
     method: "GET",
+    cache: "no-store",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    credentials: "include",
-    cache: "no-store", // 최신 데이터 필요 시
-  });
+  })
 
   const shops = await res.json();
 
@@ -29,7 +29,7 @@ export default async function Page() {
           관리하실 가게를 선택해주세요.
         </h2>
         <ul className="space-y-4">
-          {shops.map((shop: { id: string; name: string }) => (
+          {shops.length > 0 && shops.map((shop: { id: string; name: string }) => (
             <li key={shop.id}>
               <Link
                 href={`/store/${encodeURIComponent(shop.name)}`}
