@@ -3,11 +3,28 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Nav() {
     // nav 경로 따라 배경색 변경
     const path = usePathname();
+    const router = useRouter()
+
+    const logout = async () => {
+        try {
+            const response = await fetch('/api/auth/logout', {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            router.push('/login');
+            return response;
+        }catch(e) {
+            console.error(e);
+        }
+    }
     
     return (
         <nav className="Nav w-[350px] h-screen bg-white shadow-md flex flex-col justify-between p-6">
@@ -53,13 +70,15 @@ export default function Nav() {
                 </div>
             </div>
             <div className="flex flex-col text-gray-500 mb-[30px]">
-                <Link href={'/mypage'} className="mb-[15px] hover:text-stone-700">
+                <Link href={'/mypage'} className="mb-[15px] hover:text-stone-700 cursor-pointer">
                     <FontAwesomeIcon icon={faGear} className="mr-[10px] w-[20px] "/>
                     My page
                 </Link>
                 <div className="hover:text-stone-700">
-                    <FontAwesomeIcon icon={faRightFromBracket}  className="mr-[10px] w-[20px]"/>
-                    로그아웃
+                    <button onClick={logout} className="cursor-pointer">
+                        <FontAwesomeIcon icon={faRightFromBracket}  className="mr-[10px] w-[20px]"/>
+                        로그아웃
+                    </button>
                 </div>
             </div>
         </nav>      
