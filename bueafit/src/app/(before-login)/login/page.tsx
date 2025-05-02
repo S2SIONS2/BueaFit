@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
+import Button from "@/components/Button";
 
 export default function Page() {
     const [email, setEmail] = useState('solee9802@gmail.com'); // 이메일 기본 등록
@@ -108,13 +109,7 @@ export default function Page() {
           />
         </div>
         <div className="pt-4">
-          <button
-            type="button"
-            className="w-full bg-violet-400 hover:bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 cursor-pointer"
-            onClick={login}
-          >
-            로그인
-          </button>
+          <Button type="button" onClick={login}>로그인</Button>
         </div>
       </form>
       <Link href={'/signup'}>

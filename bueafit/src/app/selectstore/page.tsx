@@ -40,7 +40,7 @@ export default async function Page() {
             </li>
           ))}
         </ul>
-      </div>
+      </div>      
     </section>
   );
 }
