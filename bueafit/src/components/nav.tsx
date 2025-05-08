@@ -1,15 +1,38 @@
-"use client"
+'use client'
 
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Nav() {
     // nav 경로 따라 배경색 변경
     const path = usePathname();
-    const router = useRouter()
 
+    // 현재 선택된 가게 정보 가져오기
+    const selectedStore = fetch('/api/shop/select', {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+
+    useEffect(() => {
+        selectedStore
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("가게 정보 가져오기 실패");
+                }
+                return res;
+            })
+            .catch((error) => {
+                console.error("Error fetching selected store:", error);
+            });
+    })
+
+    // 로그아웃 실행
     const logout = async () => {
         try {
             const response = await fetch('/api/auth/logout', {
@@ -18,8 +41,7 @@ export default function Nav() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-            })
-            router.push('/login');
+            })            
             return response;
         }catch(e) {
             console.error(e);

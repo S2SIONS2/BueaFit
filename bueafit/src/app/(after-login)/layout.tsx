@@ -1,13 +1,15 @@
 import Header from "@/components/header";
 import LoadingSpinner from "@/components/LoadingSpinner";
+
 import Nav from "@/components/nav";
 import { ReactNode, Suspense } from "react";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: {
   children: ReactNode;
 }) {
+
   return (
     <div className="flex min-h-screen">
         <Nav />

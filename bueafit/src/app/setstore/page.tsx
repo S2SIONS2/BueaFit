@@ -4,11 +4,15 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useAuthStore } from '@/store/useAuthStore';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import LogOutNav from '@/components/LogoutNav';
 
 export default function StoreRegistrationPage() {
     // router
     const router = useRouter();
+
+    // shopList loading
+    const [loading, setLoading] = useState(true);
 
     // ux - step
     // 1: 인트로, 2: 가게 등록 안내, 3: 가게 등록 폼, 4: 추가 정보 안내, 5: 추가 정보 폼, 6: 완료
@@ -57,56 +61,69 @@ export default function StoreRegistrationPage() {
     };
 
     // 가게 정보 가져오기
-    const accessToken = useAuthStore((state) => state.accessToken);
     const [shopList, setShopList] = useState([]);
 
     const fetchStoreInfo = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
-            method: 'GET',
-            credentials: 'include',
+        const response = await fetch(`/api/shop`, {
+            method: "GET",
+            credentials: "include",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization' : `Bearer ${accessToken}`
+              "Content-Type": "application/json",
             },
-        });
+            cache: "no-store",
+          });
+
         const data = await response.json();
         if(data.length > 0) {
             setShopList(data);
+            setStep(3);
         }
+
+        return setLoading(false);
     }
 
     useEffect(() => {
         fetchStoreInfo()
     }, [])
 
-    const renderIntroSteps = () => (
-        <div className="absolute inset-0 bg-gray-50 bg-opacity-40 flex items-center justify-center z-10">
-            <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full text-center">
-                {step === 1 && shopList.length == 0 &&(
-                    <>
-                    <h2 className="text-xl font-bold mb-4">안녕하세요 사장님! 👋</h2>
-                    <p className="text-gray-600 mb-6">BueaFit 사용이 처음이시군요!</p>
-                    <button
-                        onClick={() => setStep(2)}
-                        className="bg-violet-400 text-white px-6 py-2 rounded-lg hover:bg-violet-600 transition cursor-pointer"
-                    >
-                        다음
-                    </button>
-                    </>
-                )}
-                {step === 2 && shopList.length == 0 &&(
-                    <>
-                    <h2 className="text-xl font-bold mb-4">등록된 가게 정보가 없어요.</h2>
-                    <p className="text-gray-600 mb-6">가게 등록을 위한 작성을 부탁드려요.</p>
-                    <button
-                        onClick={() => setStep(3)}
-                        className="bg-violet-400 text-white px-6 py-2 rounded-lg hover:bg-violet-600 transition cursor-pointer"
-                    >
-                        작성하러 가기
-                    </button>
-                    </>
-                )}
+    if(loading) {
+        return (
+            <div className='flex items-center justify-center min-h-screen'>
+                <LoadingSpinner className="w-15 h-15"/>
             </div>
+        )
+    }
+
+    const renderIntroSteps = () => (        
+        <div className="absolute inset-0 bg-gray-50 bg-opacity-40 flex items-center justify-center z-10">            
+                <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full text-center">
+                    {step === 1 && shopList.length == 0 &&(
+                        <>
+                        <h2 className="text-xl font-bold mb-4">안녕하세요 사장님! 👋</h2>
+                        <p className="text-gray-600 mb-6">BueaFit 사용이 처음이시군요!</p>
+                        <button
+                            onClick={() => setStep(2)}
+                            className="bg-violet-400 text-white px-6 py-2 rounded-lg hover:bg-violet-600 transition cursor-pointer"
+                        >
+                            다음
+                        </button>
+                        </>
+                    )}
+                    {step === 2 && shopList.length == 0 &&(
+                        <>
+                        <h2 className="text-xl font-bold mb-4">등록된 가게 정보가 없어요.</h2>
+                        <p className="text-gray-600 mb-6">가게 등록을 위한 작성을 부탁드려요.</p>
+                        <button
+                            onClick={() => setStep(3)}
+                            className="bg-violet-400 text-white px-6 py-2 rounded-lg hover:bg-violet-600 transition cursor-pointer"
+                        >
+                            작성하러 가기
+                        </button>
+                        </>
+                    )}
+                </div>
+            {/* {shopList.length > 0 ? renderStep3Form() : (
+            )} */}
         </div>
     );
 
@@ -240,6 +257,7 @@ export default function StoreRegistrationPage() {
 
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-gray-50 p-4">
+            <LogOutNav />
             {step < 3 && renderIntroSteps()}
             {step === 3 && renderStep3Form()}
             {step === 4 && renderStep4Modal()}

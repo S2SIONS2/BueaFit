@@ -3,8 +3,8 @@ interface StorePageProps {
     params: { name: string };
 }
 
-export default function StorePage({ params }: StorePageProps) {
-    const storeName = params.name;
+export default async function StorePage({ params }: StorePageProps) {
+    const storeName = (await params).name;
 
     return (
         <div>

@@ -14,7 +14,7 @@ export default function RefreshingPage() {
       method: "POST",
       credentials: "include",
     })
-      .then(res => {
+    .then(res => {
         if (res.ok) {
           router.replace(to)
         } else {
