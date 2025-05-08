@@ -42,6 +42,13 @@ export default function Nav() {
                     "Content-Type": "application/json",
                 },
             })            
+            if (response.status === 200) {
+                if(confirm('로그아웃 하시겠습니까?')) {    
+                    window.location.href = '/login';   
+                };
+            } else {
+                console.error("로그아웃 실패", response);
+            }
             return response;
         }catch(e) {
             console.error(e);
