@@ -7,6 +7,10 @@ export function middleware(request: NextRequest) {
   const access_token = request.cookies.get('access_token')?.value // 액세스 토큰
   const refresh_token = request.cookies.get('refresh_token')?.value // 리프레시 토큰
 
+  const response = NextResponse.next();
+  response.headers.set("x-pathname", pathname);
+  // return response;
+
   // access 토큰만 없으면 리프레시 토큰으로 재발급
   if (!access_token && refresh_token) {
     const url = request.nextUrl.clone()

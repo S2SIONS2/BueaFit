@@ -26,7 +26,7 @@ export default function Page() {
       if (data.length === 0) {
         router.replace("/setstore");
       } else {
-        setShops(data);
+        setShops(data.items);
         setLoading(false);
       }
     };
@@ -47,7 +47,7 @@ export default function Page() {
     });
 
     if (res.status === 204) {
-      router.push(`/store/${encodeURIComponent(shopName)}`);
+      router.push(`/store/main`);
     } else {
       alert("가게 선택에 실패했습니다.");
     }
@@ -62,10 +62,12 @@ export default function Page() {
         </h2>
   
         {loading ? (
+          // 가게 로딩 시
           <div className="flex justify-center">
             <LoadingSpinner className="w-10 h-10" />
           </div>
         ) : (
+          // 가게 로딩이 끝나면
           <ul className="space-y-4">
             {shops.map((shop) => (
               <li key={shop.id}>

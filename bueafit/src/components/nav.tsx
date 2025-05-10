@@ -69,11 +69,13 @@ export default function Nav() {
                 </div>
                 <div className="flex flex-col space-y-2 text-[18px]">
                     <Link
-                        href="/main"
+                        // href={encodeURIComponent(`/store/${selectedStore}`)}
+                        // href={list ? `/store/${list.name}` : '#'}
+                        href={'/store/main'}
                         className={`
                             text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md transition-all
                             ${
-                                path === '/main' 
+                                path === '/store/main' 
                                     ? 'bg-gray-100 text-[#111]'
                                     : ''
                             }
@@ -83,7 +85,7 @@ export default function Nav() {
                         메인
                     </Link>
                     <Link
-                        href="/customer"
+                        href="/store/customer"
                         className={`
                             text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md transition-all
                             ${

@@ -10,6 +10,8 @@ export default function RefreshingPage() {
   const to = params.get("to") || "/"
 
   useEffect(() => {
+    // 해당 페이지에서는 확인용 api 호출 방지
+    
     fetch("/api/auth/refresh", {
       method: "POST",
       credentials: "include",

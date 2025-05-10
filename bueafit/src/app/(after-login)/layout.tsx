@@ -1,26 +1,46 @@
-import Header from "@/components/header";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { cookies } from "next/headers";
 
-import Nav from "@/components/nav";
-import { ReactNode, Suspense } from "react";
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const cookieStore = cookies();
+  const access_token = (await cookieStore).get("access_token")?.value;
+  // const refresh_token = (await cookieStore).get("refresh_token")?.value;
 
-export default async function Layout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${access_token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (res.status === 401) {
+    console.log(1)
+    redirect('/auth/refreshing')
+    // const refreshRes = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/refresh`, {    
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${refresh_token}`,
+    //   },
+    //   cache: "no-store",
+    // });
+
+    // if (refreshRes.status === 401) {
+    //   redirect("/login");
+    // }
+  }
+
+  console.log(2)
 
   return (
-    <div className="flex min-h-screen">
-        <Nav />
-        <Suspense fallback={<div className="w-dvw h-dvh"> <LoadingSpinner /> </div>}>
-            <div className="flex flex-col w-[calc(100vw-350px)]">
-                <Header />
-                <main>
-                    {children}
-                </main>
-            </div>
-        </Suspense>
-    </div>
+    <Suspense fallback={<div className="w-dvw h-dvh"> <LoadingSpinner /> </div>}>
+      <div>
+        {children}
+      </div>
+    </Suspense>
   );
 }
