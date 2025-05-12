@@ -15,11 +15,6 @@ export default function Page() {
     const fetchShops = async () => {
       const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
         method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
       });
 
       const data = await res.json();

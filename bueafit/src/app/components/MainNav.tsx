@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket, faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { usePathname } from "next/navigation";
 
 export default function MainNav() {
@@ -11,13 +11,20 @@ export default function MainNav() {
 
     const logout = async () => {
         try {
-            const response = await fetch('/api/auth/logout', {
+            const response = await fetch(`/api/auth/logout`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
             })            
+            if (response.status === 200) {
+                if(confirm('로그아웃 하시겠습니까?')) {    
+                    window.location.href = '/login';   
+                };
+            } else {
+                console.error("로그아웃 실패", response);
+            }
             return response;
         }catch(e) {
             console.error(e);
@@ -31,8 +38,15 @@ export default function MainNav() {
                     <div className="w-[50px] h-[50px] bg-slate-100 flex items-center justify-center rounded-[50%]">
                         <FontAwesomeIcon icon={faStore} className="text-[25px] text-violet-400" />
                     </div>
-                    <ul>
-                        <li className="text-gray-700 text-base font-bold">BueaLine</li>
+                    <ul className="w-100">
+                        <li className="text-gray-700 text-base font-bold">
+                            <Link href={'/selectstore'} className="flex items-center">
+                                BueaLine
+                                <span className="ml-1">
+                                    <FontAwesomeIcon icon={faCaretDown} />
+                                </span>
+                            </Link>
+                        </li>
                         <li className="text-gray-700 text-base">이시온</li>
                     </ul>
                 </div>
