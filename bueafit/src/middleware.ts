@@ -8,16 +8,9 @@ export function middleware(request: NextRequest) {
   const refresh_token = request.cookies.get('refresh_token')?.value // 리프레시 토큰
 
   const response = NextResponse.next();
-  response.headers.set("x-pathname", pathname);
-  // return response;
 
-  // access 토큰만 없으면 리프레시 토큰으로 재발급
-  if (!access_token && refresh_token) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/refreshing'
-    url.searchParams.set('to', pathname)
-    return NextResponse.redirect(url)
-  }
+  // path 가져올 때 
+  response.headers.set("x-pathname", pathname);
 
   // 둘 다 없으면 로그인 페이지로
   if (!access_token && !refresh_token) {
@@ -30,9 +23,10 @@ export function middleware(request: NextRequest) {
   return NextResponse.next()
 }
 
+// 제외 경로
 export const config = {
   matcher: [
     '/', 
-    '/((?!_next|favicon\\.ico|login|signup|api|auth/refreshing).*)'
+    '/((?!_next|login|signup|api|auth/refreshing).*)'
   ],
 }

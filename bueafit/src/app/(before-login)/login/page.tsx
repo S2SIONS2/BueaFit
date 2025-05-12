@@ -1,15 +1,17 @@
 'use client'
 
+import Button from "@/app/components/Button";
+import { useAuthStore } from "@/store/useAuthStore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useAuthStore } from "@/store/useAuthStore";
-import Button from "@/components/Button";
 
 export default function Page() {
     const [email, setEmail] = useState('solee9802@gmail.com'); // 이메일 기본 등록
     const [pw, setPw] = useState('123456'); // 비밀번호 기본 등록
-    const setAccessToken = useAuthStore((state) => state.setAccessToken);
+
+    // zustand set token
+    const setToken = useAuthStore((state) => state.setToken)
 
     // route 
     const route = useRouter();
@@ -48,12 +50,9 @@ export default function Page() {
             }
 
             if(data.status === 200) {
-              // 쿠키에 access_token 저장
+              // zustand 메모리에 액세스 토큰 저장
               const access_token = jsonData.access_token;
-              document.cookie = `access_token=${access_token}; path=/`;
-
-              // zustand store에 access_token 저장
-              setAccessToken(access_token);
+              setToken(access_token);
 
               route.push('/selectstore')
             }

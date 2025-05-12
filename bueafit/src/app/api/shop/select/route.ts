@@ -1,12 +1,11 @@
+import { useAuthStore } from "@/store/useAuthStore";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET: 선택된 가게 정보 조회
 export const GET = async () => {
     try {
-      const cookieStore = cookies();
-      const accessToken = (await cookieStore).get("access_token")?.value;
-    
+      const accessToken = useAuthStore.getState().access_token;
       if (!accessToken) {
         return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
       }
@@ -15,7 +14,7 @@ export const GET = async () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          // Authorization: `Bearer ${accessToken}`,
         },
       });
   

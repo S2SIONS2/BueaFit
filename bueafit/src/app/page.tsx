@@ -1,10 +1,10 @@
-import LoginNav from "@/components/loginNav";
+import LoginNav from "./components/LoginNav";
 
 export default function Home() {
   return (
     <div>
       <LoginNav />
-      소개 페이지
+      소개페이지
     </div>
   );
 }

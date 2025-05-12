@@ -1,9 +1,6 @@
-import { cookies } from "next/headers";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const cookieStore = cookies();
-  const access_token = (await cookieStore).get("access_token")?.value;
 
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/logout`, {
@@ -11,7 +8,7 @@ export async function POST(request: NextRequest) {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
+        // Authorization: `Bearer ${access_token}`,
       },
     });
 

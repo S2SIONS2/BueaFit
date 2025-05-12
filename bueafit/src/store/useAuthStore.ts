@@ -1,15 +1,13 @@
-'use client';
+import { create } from 'zustand'
 
-import { create } from 'zustand';
-
-interface AuthState {
-  accessToken: string | null;
-  setAccessToken: (token: string) => void;
-  clearAccessToken: () => void;
+type Auth = {
+    access_token: string | null;
+    setToken: (access_token: string)=> void;
+    clearToken: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  accessToken: null,
-  setAccessToken: (token) => set({ accessToken: token }),
-  clearAccessToken: () => set({ accessToken: null }),
-}));
+export const useAuthStore = create<Auth>()((set) => ({
+    access_token: null,
+    setToken: (access_token) => set({ access_token }),
+    clearToken: () => set({access_token: null})
+}))

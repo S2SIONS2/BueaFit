@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import LogOutNav from "@/components/LogoutNav";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import LogOutNav from "@/app/components/LogoutNav";
+import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Page() {
   const [shops, setShops] = useState<{ id: string; name: string }[]>([]);
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const accessToken = useAuthStore.getState().access_token;
 
-  // 가게 목록 가져오기
   useEffect(() => {
     const fetchShops = async () => {
-      const res = await fetch(`/api/shop`, {
+      const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -27,20 +27,19 @@ export default function Page() {
         router.replace("/setstore");
       } else {
         setShops(data.items);
-        setLoading(false);
       }
     };
 
     fetchShops();
   }, [router]);
 
-  // 가게 선택하기
   const handleSelectShop = async (shopName: string, shopId: number | string) => {
-    const res = await fetch(`/api/shop/select`, {
+    const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/selected`, {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
       cache: "no-store",
       body: JSON.stringify({ shop_id: shopId }),
@@ -60,29 +59,21 @@ export default function Page() {
         <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
           관리하실 가게를 선택해주세요.
         </h2>
-  
-        {loading ? (
-          // 가게 로딩 시
-          <div className="flex justify-center">
-            <LoadingSpinner className="w-10 h-10" />
-          </div>
-        ) : (
-          // 가게 로딩이 끝나면
-          <ul className="space-y-4">
-            {shops.map((shop) => (
-              <li key={shop.id}>
-                <button
-                  type="button"
-                  onClick={() => handleSelectShop(shop.name, shop.id)}
-                  className="w-full text-center bg-violet-300 hover:bg-violet-400 text-white font-medium py-3 px-6 rounded-lg shadow-md transition-colors duration-200 cursor-pointer"
-                >
-                  {shop.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <ul className="space-y-4">
+          {shops.map((shop) => (
+            <li key={shop.id}>
+              <button
+                type="button"
+                onClick={() => handleSelectShop(shop.name, shop.id)}
+                className="w-full text-center bg-violet-300 hover:bg-violet-400 text-white font-medium py-3 px-6 rounded-lg shadow-md transition-colors duration-200 cursor-pointer"
+              >
+                {shop.name}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
-  );  
+  );
 }
+

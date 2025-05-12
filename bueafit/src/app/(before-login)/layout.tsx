@@ -1,17 +1,17 @@
-import LoginNav from "@/components/loginNav";
-import { ReactNode, Suspense } from "react";
+import { Suspense } from "react";
+import LoginNav from "../components/LoginNav";
 
 export default function Layout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  return (
-    <div className="min-h-screen">
-        <LoginNav />
-        <Suspense fallback={<div>Loading ...</div>}>
-            {children}
-        </Suspense>
-    </div>
-  );
+    children
+}: Readonly<{
+    children: React.ReactNode
+}>) {
+    return (
+        <div className="min-h-screen">
+            <Suspense>
+                <LoginNav />
+                {children}
+            </Suspense>
+        </div>
+    )
 }
