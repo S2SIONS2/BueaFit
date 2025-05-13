@@ -26,8 +26,6 @@ export async function fetchInterceptors(input: RequestInfo, init?: RequestInit):
         credentials: 'include',
       });
 
-      console.log(refreshRes)
-
       if (!refreshRes.ok) throw new Error('Refresh failed');
 
       const data = await refreshRes.json();

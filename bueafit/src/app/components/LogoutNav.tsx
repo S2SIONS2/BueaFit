@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function LogOutNav() {
     const logout = async () => {
         try {
@@ -22,12 +24,13 @@ export default function LogOutNav() {
     }
 
     return (
-        <nav>
-            <div className="flex flex-col space-y-2 text-[18px]">
+        <nav className="w-full h-[50px] flex items-center pl-2 pr-2 bg-white">
+            <div className="w-full flex justify-between space-x-2 text-[18px]">
+                <Link href={'/selectstore'} className="font-bold">BueaFit</Link>
                 <button
                     onClick={logout}
                     className={`
-                        text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md transition-all cursor-pointer
+                        text-gray-800 hover:bg-gray-100 cursor-pointer
                     `}
                 >
                     로그아웃

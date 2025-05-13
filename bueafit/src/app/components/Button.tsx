@@ -49,7 +49,7 @@ export default function Button({
                 w-full
                 bg-violet-400 hover:bg-violet-600
                 text-white font-semibold
-                py-2 px-4 rounded-lg
+                py-2 px-4
                 transition duration-200
                 cursor-pointer
                 disabled:opacity-50 disabled:cursor-not-allowed

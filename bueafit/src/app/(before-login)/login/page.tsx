@@ -53,8 +53,7 @@ export default function Page() {
               // zustand 메모리에 액세스 토큰 저장
               const access_token = jsonData.access_token;
               setToken(access_token);
-
-              route.push('/selectstore')
+              route.push('/selectstore');
             }
             if(data.status === 401) {
                 alert('이메일이나 비밀번호가 틀렸습니다.')            

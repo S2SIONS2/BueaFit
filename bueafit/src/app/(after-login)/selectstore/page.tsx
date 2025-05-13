@@ -15,6 +15,9 @@ export default function Page() {
     const fetchShops = async () => {
       const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        }
       });
 
       const data = await res.json();
@@ -48,25 +51,27 @@ export default function Page() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gray-50">
+    <section className="min-h-screen flex flex-col bg-gray-50">
       <LogOutNav />
-      <div className="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
-          관리하실 가게를 선택해주세요.
-        </h2>
-        <ul className="space-y-4">
-          {shops.map((shop) => (
-            <li key={shop.id}>
-              <button
-                type="button"
-                onClick={() => handleSelectShop(shop.name, shop.id)}
-                className="w-full text-center bg-violet-300 hover:bg-violet-400 text-white font-medium py-3 px-6 rounded-lg shadow-md transition-colors duration-200 cursor-pointer"
-              >
-                {shop.name}
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className="min-h-[calc(100vh-50px)] flex items-center justify-center ">
+        <div className="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+            관리하실 가게를 선택해주세요.
+          </h2>
+          <ul className="space-y-4">
+            {shops.map((shop) => (
+              <li key={shop.id}>
+                <button
+                  type="button"
+                  onClick={() => handleSelectShop(shop.name, shop.id)}
+                  className="w-full text-center bg-violet-300 hover:bg-violet-400 text-white font-medium py-3 px-6 rounded-lg shadow-md transition-colors duration-200 cursor-pointer"
+                >
+                  {shop.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
