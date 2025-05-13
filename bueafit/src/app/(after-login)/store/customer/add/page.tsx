@@ -19,34 +19,44 @@ export default function Page() {
     const accessToken = useAuthStore.getState().access_token;
     // 신규 고객 등록
     const newCustomer = async () => {
-        // input required 충족 안될 때
-        // name 없을 때
-        if(name === ""){            
-            nameRef.current?.focus()
-            return;
-        }
-        if(phone === "") {
-            phoneRef.current?.focus()
-            return;
-        }
-        const response = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/phonebooks`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({
-                "name" : name,
-                "phone_number" : phone,
-                "group_name" : group,
-                "memo" : memo
-            })            
-        })
+        try {
+            // input required 충족 안될 때
+            // name 없을 때
+            if(name === ""){            
+                nameRef.current?.focus()
+                return;
+            }
+            if(phone === "") {
+                phoneRef.current?.focus()
+                return;
+            }
+            const response = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/phonebooks`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    "name" : name,
+                    "phone_number" : phone,
+                    "group_name" : group,
+                    "memo" : memo
+                })            
+            })
+            
+            if(response.status === 201) {
+                route.push('/store/customer')
+                return;
+            }
 
-        const data = response.json();
-        console.log(data)
-
-        // route.push('/store/customer')
+            if(response.status === 422) {
+                const errorMsg = response.json();
+                errorMsg.then((res) => alert(res.detail[0].msg));
+            }
+        }catch(e){
+            console.error(e)
+            alert('고객 추가 등록 중 오류가 발생했습니다. 다시 등록해주세요.')
+        }
     }
 
     return (
