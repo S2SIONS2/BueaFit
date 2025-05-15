@@ -54,6 +54,11 @@ export default function Page() {
               const access_token = jsonData.access_token;
               setToken(access_token);
               route.push('/selectstore');
+
+              // refresh token local storage에 저장
+              const refresh_token = jsonData.refresh_token
+              localStorage.setItem('refresh_token', refresh_token);
+
             }
             if(data.status === 401) {
                 alert('이메일이나 비밀번호가 틀렸습니다.')            

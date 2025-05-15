@@ -18,6 +18,9 @@ export async function fetchInterceptors(input: RequestInfo, init?: RequestInit):
 
   const response = await fetch(input, modifiedInit);
 
+  // localstorage의 리프레시 토큰
+  const refresh_token = localStorage.getItem('refresh_token')
+
   // 401 처리 및 리프레시
   if (response.status === 401) { // && !input.toString().includes('/auth/refresh')
     try {

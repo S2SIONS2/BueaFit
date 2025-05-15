@@ -67,7 +67,7 @@ export default function Page() {
                 </h1>
                 <p className="mb-8">신규로 등록할 고객 정보를 입력해주세요.</p>
 
-                <form className="space-y-7">
+                <form className="space-y-7 rounded-2xl shadow-sm p-6 mb-8 space-y-4">
                     <div>
                         <label className="block mb-2 text-base font-bold font-medium text-gray-700">
                             고객 명

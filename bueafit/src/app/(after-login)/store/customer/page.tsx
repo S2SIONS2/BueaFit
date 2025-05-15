@@ -87,30 +87,30 @@ export default function Page() {
             </section>
 
             <section className="mt-6">                
-                <ul className="w-full grid grid-cols-6 bg-gray-100 text-sm font-semibold text-gray-700 px-4 py-2 rounded-t">
+                <ul className="w-full grid grid-cols-10 bg-gray-100 text-sm font-semibold text-gray-700 px-4 py-2 rounded-t">
                     <li className="flex items-center">
                     <FontAwesomeIcon icon={faUser} className="text-gray-500" />
                     </li>
-                    <li>그룹</li>
-                    <li>고객명</li>
-                    <li>전화번호</li>
-                    <li>메모</li>
+                    <li className="col-span-2">그룹</li>
+                    <li className="col-span-2">고객명</li>
+                    <li className="col-span-3">전화번호</li>
+                    <li className="col-span-2">메모</li>
                 </ul>
             
                 <ul className="rounded-b">
                     {
                         customerList?.map((customer) => (
                             <li key={customer.id} 
-                                className="w-full grid grid-cols-6 px-4 py-3 items-center text-sm hover:bg-gray-50 border border-gray-200 mt-2 rounded-lg cursor-pointer"
-                                onClick={() => route.push(`/customer/detail/${encodeURIComponent(customer.id)}`)}
+                                className="w-full grid grid-cols-10 px-4 py-3 items-center text-sm hover:bg-gray-50 border border-gray-200 mt-2 rounded-lg cursor-pointer"
+                                onClick={() => route.push(`/store/customer/detail/${encodeURIComponent(customer.id)}`)}
                             >
                                 <div>
                                     <FontAwesomeIcon icon={faUser} className="text-gray-400" />
                                 </div>
-                                <div className="truncate">{customer.group_name}</div>
-                                <div className="truncate">{customer.name}</div>
-                                <div className="truncate">{customer.phone_number}</div>
-                                <div className="truncate">{customer.memo}</div>
+                                <div className="truncate text-ellipsis col-span-2">{customer.group_name}</div>
+                                <div className="truncate text-ellipsis col-span-2">{customer.name}</div>
+                                <div className="truncate text-ellipsis col-span-3">{customer.phone_number}</div>
+                                <div className="truncate text-ellipsis col-span-2">{customer.memo}</div>
                             </li>
                         ))
                     }
