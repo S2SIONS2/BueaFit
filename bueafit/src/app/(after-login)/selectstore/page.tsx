@@ -5,30 +5,38 @@ import { useRouter } from "next/navigation";
 import LogOutNav from "@/app/components/LogoutNav";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useAuthStore } from "@/store/useAuthStore";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 export default function Page() {
+  const [loading, setLoading] = useState(true)
   const [shops, setShops] = useState<{ id: string; name: string }[]>([]);
   const router = useRouter();
   const accessToken = useAuthStore.getState().access_token;
 
   useEffect(() => {
-    const fetchShops = async () => {
-      const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+    try{
+      const fetchShops = async () => {
+        const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+  
+        const data = await res.json();
+
+        // 저장된 가게가 없을 때
+        if (data.length === 0) {
+          router.replace("/setstore");
+        } else {
+          setShops(data.items);
+          setLoading(false)
         }
-      });
-
-      const data = await res.json();
-      if (data.length === 0) {
-        router.replace("/setstore");
-      } else {
-        setShops(data.items);
       }
-    };
-
-    fetchShops();
+      fetchShops();
+    }catch(e) {
+      console.error(e)
+    }
   }, [router]);
 
   const handleSelectShop = async (shopName: string, shopId: number | string) => {
@@ -59,6 +67,13 @@ export default function Page() {
             관리하실 가게를 선택해주세요.
           </h2>
           <ul className="space-y-4">
+            {
+              loading && (
+                <div className="flex items-center justify-center">
+                  <LoadingSpinner className="w-10 h-10"/>
+                </div>
+              )
+            }
             {shops.map((shop) => (
               <li key={shop.id}>
                 <button
