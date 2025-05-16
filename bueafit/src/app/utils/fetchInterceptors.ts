@@ -26,14 +26,18 @@ export async function fetchInterceptors(input: RequestInfo, init?: RequestInit):
     try {
       const refreshRes = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/refresh`, {
         method: 'POST',
+        headers: {
+          'X-Refresh-Token' : refresh_token ?? ''
+        },
         credentials: 'include',
-      });
+      });      
 
       if (!refreshRes.ok) throw new Error('Refresh failed');
 
       const data = await refreshRes.json();
-      const newAccessToken = data.access_token;
-      setToken(newAccessToken);
+      const newAccessToken = data.access_token; // 새 액세스 토큰 발급
+      localStorage.setItem('refresh_token', data.refresh_token) // 리프레시 토큰 로컬 스토리지에 저장
+      setToken(newAccessToken); // 새 액세스 토큰 주스탠드(메모리)에 저장
 
       // 원래 요청 재시도
       const retryResponse = await fetch(input, {

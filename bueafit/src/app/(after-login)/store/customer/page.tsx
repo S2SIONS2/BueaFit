@@ -1,7 +1,7 @@
 'use client'
 
-import LoadingSpinner from "@/app/components/LoadingSpinner";
 import SearchComponent from "@/app/components/Search";
+import CustomerSkeleton from "@/app/components/skeleton/customer-skeleton";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useSearchStore } from "@/store/useSearchStore";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
@@ -11,112 +11,115 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface customerType {
-    id: string; 
-    group_name: string; 
-    name: string; 
-    phone_number: string; 
-    memo: string; 
+  id: string;
+  group_name: string;
+  name: string;
+  phone_number: string;
+  memo: string;
 }
 
 export default function Page() {
-    const [loading, setLoading] = useState(true); // api loading check
-    // 고객 리스트
-    const [customerList, setCustomerList] = useState<customerType[]>([])
-    // const [currentPage, setCurrentPage] = useState(1) // 현재 페이지
-    // const [totalPage, setTotalPage] = useState(1) // 전체 페이지
-    const route = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [customerList, setCustomerList] = useState<customerType[]>([]);
+  const route = useRouter();
 
-    // 유저 검색 시
-    const word = useSearchStore((state) => state.searchParam);
+  const word = useSearchStore((state) => state.searchParam);
 
-    // 고객 리스트 호출
-    const getList = async () => {
-        const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/phonebooks?search=${word}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-
-        if(res.status === 200) {
-            const data = await res.json();
-            setCustomerList(data.items);
-            // setCurrentPage(data.page)
-            // setTotalPage(data.pages)
-            setLoading(false)
+  const getList = async () => {
+    setLoading(true);
+    try {
+      const res = await fetchInterceptors(
+        `${process.env.NEXT_PUBLIC_BUEAFIT_API}/phonebooks?search=${word}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
+      );
+
+      if (res.status === 200) {
+        const data = await res.json();
+        setCustomerList(data.items);
+      }
+    } finally {
+      setLoading(false);
     }
+  };
 
-    useEffect(() => {
-        getList();
-    }, [word])
+  useEffect(() => {
+    getList();
+  }, [word]);
 
-    // 고객 디테일 페이지 이동
+  return (
+    <div className="p-6 space-y-6 bg-white">
+      <section className="flex items-center justify-between pb-4">
+        <h2 className="text-2xl font-bold text-gray-800">고객 관리</h2>
+      </section>
 
-    if(loading) {
-        return (
-            <div className="flex items-center justify-center w-full min-h-screen">
-                <LoadingSpinner className="w-15 h-15"/>
-            </div>
-        )
-    }
+      <section className="flex flex-wrap items-center gap-3">
+        <SearchComponent
+          className={"grow h-[36px]"}
+          placeholder="고객명 혹은 전화번호 혹은 그룹 혹은 메모"
+        />
 
-    return (
-        <div className="p-6 space-y-6 bg-white">            
-            <section className="flex items-center justify-between pb-4">
-                <h2 className="text-2xl font-semibold text-gray-800">고객 관리</h2>
-            </section>
+        <Link
+          href="/store/customer/add"
+          className="bg-violet-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-violet-600 transition"
+        >
+          고객 추가
+        </Link>
+      </section>
 
-            <section className="flex flex-wrap items-center gap-3">
-                <SearchComponent className={'grow h-[36px]'} placeholder="고객명 혹은 전화번호 혹은 그룹 혹은 메모"/>
+      <section className="mt-6">
+        <ul className="w-full grid grid-cols-10 bg-gray-100 text-sm font-semibold text-gray-700 px-4 py-2 rounded-t">
+          <li className="flex items-center">
+            <FontAwesomeIcon icon={faUser} className="text-gray-500" />
+          </li>
+          <li className="col-span-2">그룹</li>
+          <li className="col-span-2">고객명</li>
+          <li className="col-span-3">전화번호</li>
+          <li className="col-span-2">메모</li>
+        </ul>
 
-                <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-500">
-                    <option disabled selected>고객 그룹</option>
-                    <option>전체</option>
-                    <option>그룹1</option>
-                    <option>그룹2</option>
-                    <option>그룹3</option>
-                </select>
-
-                <Link
-                    href="/store/customer/add"
-                    className="bg-violet-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-violet-600 transition"
-                >
-                    고객 추가
-                </Link>
-            </section>
-
-            <section className="mt-6">                
-                <ul className="w-full grid grid-cols-10 bg-gray-100 text-sm font-semibold text-gray-700 px-4 py-2 rounded-t">
-                    <li className="flex items-center">
-                    <FontAwesomeIcon icon={faUser} className="text-gray-500" />
-                    </li>
-                    <li className="col-span-2">그룹</li>
-                    <li className="col-span-2">고객명</li>
-                    <li className="col-span-3">전화번호</li>
-                    <li className="col-span-2">메모</li>
-                </ul>
-            
-                <ul className="rounded-b">
-                    {
-                        customerList?.map((customer) => (
-                            <li key={customer.id} 
-                                className="w-full grid grid-cols-10 px-4 py-3 items-center text-sm hover:bg-gray-50 border border-gray-200 mt-2 rounded-lg cursor-pointer"
-                                onClick={() => route.push(`/store/customer/detail/${encodeURIComponent(customer.id)}`)}
-                            >
-                                <div>
-                                    <FontAwesomeIcon icon={faUser} className="text-gray-400" />
-                                </div>
-                                <div className="truncate text-ellipsis col-span-2">{customer.group_name}</div>
-                                <div className="truncate text-ellipsis col-span-2">{customer.name}</div>
-                                <div className="truncate text-ellipsis col-span-3">{customer.phone_number}</div>
-                                <div className="truncate text-ellipsis col-span-2">{customer.memo}</div>
-                            </li>
-                        ))
-                    }
-                </ul>
-            </section>
-
-        </div>
-    )
+        <ul className="rounded-b">
+          {loading ? (
+            <>
+              <CustomerSkeleton />
+              <CustomerSkeleton />
+              <CustomerSkeleton />
+            </>
+          ) : (
+            customerList.map((customer) => (
+              <li
+                key={customer.id}
+                className="w-full grid grid-cols-10 px-4 py-3 items-center text-sm hover:bg-gray-50 border border-gray-200 mt-2 rounded-lg cursor-pointer"
+                onClick={() =>
+                  route.push(
+                    `/store/customer/detail/${encodeURIComponent(customer.id)}`
+                  )
+                }
+              >
+                <div>
+                  <FontAwesomeIcon icon={faUser} className="text-gray-400" />
+                </div>
+                <div className="truncate text-ellipsis col-span-2">
+                  {customer.group_name}
+                </div>
+                <div className="truncate text-ellipsis col-span-2">
+                  {customer.name}
+                </div>
+                <div className="truncate text-ellipsis col-span-3">
+                  {customer.phone_number}
+                </div>
+                <div className="truncate text-ellipsis col-span-2">
+                  {customer.memo}
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+      </section>
+    </div>
+  );
 }
