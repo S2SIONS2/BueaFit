@@ -20,6 +20,7 @@ interface customerType {
 
 export default function Page() {
   const [loading, setLoading] = useState(true);
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const [customerList, setCustomerList] = useState<customerType[]>([]);
   const route = useRouter();
 
@@ -47,8 +48,17 @@ export default function Page() {
     }
   };
 
+  // 최초 로딩
   useEffect(() => {
     getList();
+    setIsFirstRender(false);
+  }, []);
+
+  // 검색어 변경 시 로딩은 발생하되 스켈레톤은 안보이도록
+  useEffect(() => {
+    if (!isFirstRender) {
+      getList();
+    }
   }, [word]);
 
   return (
@@ -74,7 +84,7 @@ export default function Page() {
       <section className="mt-6">
         <ul className="w-full grid grid-cols-10 bg-gray-100 text-sm font-semibold text-gray-700 px-4 py-2 rounded-t">
           <li className="flex items-center">
-            <FontAwesomeIcon icon={faUser} className="text-gray-500" />
+            <FontAwesomeIcon icon={faUser} className="text-gray-500" size="sm" />
           </li>
           <li className="col-span-2">그룹</li>
           <li className="col-span-2">고객명</li>
@@ -83,7 +93,7 @@ export default function Page() {
         </ul>
 
         <ul className="rounded-b">
-          {loading ? (
+          {loading && isFirstRender ? (
             <>
               <CustomerSkeleton />
               <CustomerSkeleton />
@@ -101,7 +111,7 @@ export default function Page() {
                 }
               >
                 <div>
-                  <FontAwesomeIcon icon={faUser} className="text-gray-400" />
+                  <FontAwesomeIcon icon={faUser} className="text-gray-400" size="sm" />
                 </div>
                 <div className="truncate text-ellipsis col-span-2">
                   {customer.group_name}
