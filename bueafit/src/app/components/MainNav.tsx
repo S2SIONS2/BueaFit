@@ -4,10 +4,36 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket, faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { fetchInterceptors } from "../utils/fetchInterceptors";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function MainNav() {
     // nav 경로 따라 배경색 변경
     const path = usePathname();
+
+    // zustand에 있는 액세스 토큰
+    const accessToken = useAuthStore.getState().access_token;
+
+    // 현재 선택된 가게 정보 가져오기
+    const [list, setList] = useState<{ name?: string }>({});
+    useEffect(() => {
+        const getList = async () => {
+            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/selected`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                }
+            })
+
+            const data = await res.json()
+            setList(data)
+            if(res.status === 200) {
+            }
+        }
+
+        getList();
+    }, [])
 
     const logout = async () => {
         try {
@@ -41,7 +67,7 @@ export default function MainNav() {
                     <ul className="w-100">
                         <li className="text-gray-700 text-base font-bold">
                             <Link href={'/selectstore'} className="flex items-center">
-                                BueaLine
+                                {list.name}
                                 <span className="ml-1">
                                     <FontAwesomeIcon icon={faCaretDown} />
                                 </span>

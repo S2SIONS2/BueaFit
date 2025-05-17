@@ -42,7 +42,7 @@ export default function StoreRegistrationPage() {
 
         if(confirm('가게를 등록하시겠습니까?')) {    
             // 등록 조건 체크 생략 가능
-            const response = await fetch(`/api/shop/post`, {
+            const response = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -53,7 +53,6 @@ export default function StoreRegistrationPage() {
                 business_number: businessNumber,
             }),
         });
-
             const data = response;
 
             if(data.status === 201) {

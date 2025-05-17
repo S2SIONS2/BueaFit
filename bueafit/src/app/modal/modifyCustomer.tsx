@@ -9,7 +9,7 @@ interface CustomerInfo {
   group_name?: string;
 }
 
-export default function ModifyCustomerModal({name, phone_number, memo, group_name}: CustomerInfo) {
+export default function ModifyCustomerModal({customer}: CustomerInfo) {
     const [modifyGroup, setModifyGroup] = useState('');
     const [modifyName, setModifyName] = useState('');
     const [modifyPhone, setModifyPhone] = useState('');
