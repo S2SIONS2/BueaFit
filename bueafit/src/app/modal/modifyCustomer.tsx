@@ -126,7 +126,7 @@ export default function ModifyCustomerModal({customer, onClose}: ModifyProps,) {
                                             onClick={() => {
                                                 setModifyGroup(group.group_name);
                                                 setGroupList([]);
-                                                console.log(groupList)
+                                                setShowGroupList(false);                                                
                                             }}
                                         >
                                             {group.group_name}
@@ -139,31 +139,34 @@ export default function ModifyCustomerModal({customer, onClose}: ModifyProps,) {
 
                 </label>
                 <label>
-                    <p className="text-sm font-medium text-gray-700 mb-1">이름</p>
+                    <p className="text-sm font-medium text-gray-700 mb-1 mt-3">이름</p>
                     <input
                         type="text"
                         value={modifyName}
                         onChange={(e) => setModifyName(e.target.value)}
                         placeholder={customer.name}
-                        className="w-full py-2 border-b border-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        onFocus={() => setShowGroupList(false)}
+                        className="w-full py-2 border-b border-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 mb-3"
                     />
                 </label>
                 <label>
-                    <p className="text-sm font-medium text-gray-700 mb-1">전화번호</p>
+                    <p className="text-sm font-medium text-gray-700 mb-1 mt-3">전화번호</p>
                     <input
                         type="text"
                         value={modifyPhone}
                         onChange={(e) => setModifyPhone(e.target.value)}
                         placeholder={customer.phone_number.toString()}
+                        onFocus={() => setShowGroupList(false)}
                         className="w-full py-2 border-b border-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                 </label>
                 <label>
-                    <p className="text-sm font-medium text-gray-700 mb-1">메모</p>
+                    <p className="text-sm font-medium text-gray-700 mb-1 mt-3">메모</p>
                     <input
                         type="text"
                         value={modifyMemo}
                         onChange={(e) => setModifyMemo(e.target.value)}
+                        onFocus={() => setShowGroupList(false)}
                         placeholder={customer.memo}
                         className="w-full py-2 border-b border-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
                     />

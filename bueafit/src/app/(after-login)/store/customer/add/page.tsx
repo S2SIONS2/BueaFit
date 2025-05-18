@@ -2,9 +2,16 @@
 
 import Button from "@/app/components/Button";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
+import useDebounce from "@/app/utils/useDebounce";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+type Group = {
+    group_name: string;
+    count: number;
+    items: any[];
+};
 
 export default function Page() {
     const [name, setName] = useState(""); // 이름
@@ -17,6 +24,33 @@ export default function Page() {
 
     const route = useRouter(); // customer 페이지로 이동
     const accessToken = useAuthStore.getState().access_token;
+
+    // 그룹 리스트
+    const [groupList, setGroupList] = useState<Group[]>([]);
+
+    // 검색 중복 방지
+    const debouncedGroup = useDebounce(group, 300);
+    const [showGroupList, setShowGroupList] = useState(false);
+
+    // 그룹 검색
+    const searchGroup = async () => {
+        const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/phonebooks/groups`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        const data = await res.json()
+        const filteredData = data.filter((name) => name.group_name !== "")
+        setGroupList(filteredData);
+    }
+
+    useEffect(() => {
+        if (debouncedGroup !== "") {
+            searchGroup();
+        }
+    }, [debouncedGroup]);
+
     // 신규 고객 등록
     const newCustomer = async () => {
         try {
@@ -79,6 +113,7 @@ export default function Page() {
                             ref={nameRef}
                             placeholder="고객명을 입력해주세요."
                             onChange={(e) => setName(e.target.value)}
+                            onFocus={() => setShowGroupList(false)}
                             required
                             className="w-full h-[30px] border border-t-[0] border-l-[0] border-r-[0] rounded-none border-gray-300 focus:outline-none focus:ring-1 focus:ring-top-none focus:ring-violet-500"
                         />
@@ -96,6 +131,7 @@ export default function Page() {
                             ref={phoneRef}
                             placeholder="전화번호를 입력해주세요."
                             onChange={(e) => setPhone(e.target.value)}
+                            onFocus={() => setShowGroupList(false)}
                             required
                             className="w-full h-[30px] border border-t-[0] border-l-[0] border-r-[0] rounded-none border-gray-300 focus:outline-none focus:ring-1 focus:ring-violet-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             style={{ WebkitAppearance: 'none', MozAppearance: 'textfield' }}
@@ -109,8 +145,30 @@ export default function Page() {
                             value={group}
                             placeholder="그룹을 입력해주세요."
                             onChange={(e) => setGroup(e.target.value)}
+                            onFocus={() => setShowGroupList(true)}
                             className="w-full h-[30px] border border-t-[0] border-l-[0] border-r-[0] rounded-none border-gray-300 focus:outline-none focus:ring-1 focus:ring-violet-500"
                         />
+                        {
+                            showGroupList && (
+                                <ul className="absolute z-10 bg-white w-full border-l border-r border-gray-400 max-h-40 overflow-y-auto p-0">
+                                    {
+                                        groupList.map((group, index) => (
+                                            <li
+                                                key={index}
+                                                className="text-sm text-gray-800 cursor-pointer hover:text-violet-500 h-[35px] border-b border-gray-400 flex items-center pl-2"
+                                                onClick={() => {
+                                                    setGroup(group.group_name);
+                                                    setGroupList([]);        
+                                                    setShowGroupList(false);                                        
+                                                }}
+                                            >
+                                                {group.group_name}
+                                            </li>
+                                        ))
+                                    }   
+                                </ul>
+                            )
+                        }
                     </div>
 
                     <div>
@@ -120,6 +178,7 @@ export default function Page() {
                             value={memo}
                             placeholder="메모를 입력해주세요."
                             onChange={(e) => setMemo(e.target.value)}
+                            onFocus={() => setShowGroupList(false)}
                             className="w-full h-[30px] border border-t-[0] border-l-[0] border-r-[0] rounded-none border-gray-300 focus:outline-none focus:ring-1 focus:ring-violet-500"
                         />
                     </div>
