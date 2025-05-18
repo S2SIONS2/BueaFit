@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../components/Button";
 import { fetchInterceptors } from "../utils/fetchInterceptors";
 import { useRouter } from "next/navigation";
 import { useModalStore } from "@/store/useModalStore";
+import useDebounce from "../utils/useDebounce";
 
 interface ModifyProps {
     customer: CustomerInfo;
@@ -19,15 +20,48 @@ interface CustomerInfo {
     group_name?: string;
 }
 
+type Group = {
+    group_name: string;
+    count: number;
+    items: any[];
+};
+
 export default function ModifyCustomerModal({customer, onClose}: ModifyProps,) {
+    // 수정 할 고객 정보
     const [modifyGroup, setModifyGroup] = useState(customer.group_name || '');
     const [modifyName, setModifyName] = useState(customer.name || '');
     const [modifyPhone, setModifyPhone] = useState(customer.phone_number || '');
     const [modifyMemo, setModifyMemo] = useState(customer.memo || '');
 
     const route = useRouter();
-
+    // 모달 스토어
     const { closeModal } = useModalStore();
+
+    // 그룹 리스트
+    const [groupList, setGroupList] = useState<Group[]>([]);
+
+    // 검색 중복 방지
+    const debouncedGroup = useDebounce(modifyGroup, 300);
+    const [showGroupList, setShowGroupList] = useState(false);
+
+    // 그룹 검색
+    const searchGroup = async () => {
+        const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/phonebooks/groups`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        const data = await res.json()
+        const filteredData = data.filter((name) => name.group_name !== "")
+        setGroupList(filteredData);
+    }
+
+    useEffect(() => {
+    if (debouncedGroup !== customer.group_name) {
+        searchGroup();
+    }
+}, [debouncedGroup]);
 
     // 내용 수정
     const modify = async () => {
@@ -70,47 +104,70 @@ export default function ModifyCustomerModal({customer, onClose}: ModifyProps,) {
     return (
         <section className="p-2 bg-white rounded-2xl w-full max-w-md mx-auto">
             <h1 className="text-2xl font-bold mb-6 text-center">고객 수정</h1>
-            <form className="space-y-4">
-                <div>
+            <form className="space-y-4 w-full">
+                <label className="relative w-full">
                     <p className="text-sm font-medium text-gray-700 mb-1">그룹</p>
                     <input
                         type="text"
                         value={modifyGroup}
                         onChange={(e) => setModifyGroup(e.target.value)}
                         placeholder={customer.group_name}
-                        className="w-full py-2 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        onFocus={() => setShowGroupList(true)}
+                        className="w-full py-2 border-b border-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
                     />
-                </div>
-                <div>
+                    {
+                        showGroupList && modifyGroup !== customer.group_name && (
+                            <ul className="absolute z-10 bg-white w-full border-l border-r border-gray-400 max-h-40 overflow-y-auto p-0">
+                                {
+                                    groupList.map((group, index) => (
+                                        <li
+                                            key={index}
+                                            className="text-sm text-gray-800 cursor-pointer hover:text-violet-500 h-[35px] border-b border-gray-400 flex items-center pl-2"
+                                            onClick={() => {
+                                                setModifyGroup(group.group_name);
+                                                setGroupList([]);
+                                                console.log(groupList)
+                                            }}
+                                        >
+                                            {group.group_name}
+                                        </li>
+                                    ))
+                                }   
+                            </ul>
+                        )
+                    }
+
+                </label>
+                <label>
                     <p className="text-sm font-medium text-gray-700 mb-1">이름</p>
                     <input
                         type="text"
                         value={modifyName}
                         onChange={(e) => setModifyName(e.target.value)}
                         placeholder={customer.name}
-                        className="w-full py-2 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        className="w-full py-2 border-b border-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
                     />
-                </div>
-                <div>
+                </label>
+                <label>
                     <p className="text-sm font-medium text-gray-700 mb-1">전화번호</p>
                     <input
                         type="text"
                         value={modifyPhone}
                         onChange={(e) => setModifyPhone(e.target.value)}
                         placeholder={customer.phone_number.toString()}
-                        className="w-full py-2 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-full py-2 border-b border-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                </div>
-                <div>
+                </label>
+                <label>
                     <p className="text-sm font-medium text-gray-700 mb-1">메모</p>
                     <input
                         type="text"
                         value={modifyMemo}
                         onChange={(e) => setModifyMemo(e.target.value)}
                         placeholder={customer.memo}
-                        className="w-full py-2 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        className="w-full py-2 border-b border-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
                     />
-                </div>
+                </label>
                 <div className="flex justify-center mt-6 gap-2">
                     <Button type="submit" className="cursor-pointer rounded-sm border border-gary-500 pt-1 pb-1 pl-4 pr-4 w-auto" onClick={modify}>수정</Button>                    
                     <button type="button" className="cursor-pointer rounded-sm border border-gary-500 pt-1 pb-1 pl-4 pr-4 bg-gray-500 text-white" onClick={deleteCustomer}>삭제</button>
