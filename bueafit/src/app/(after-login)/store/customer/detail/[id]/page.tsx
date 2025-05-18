@@ -5,8 +5,10 @@ import { useParams } from 'next/navigation';
 import { fetchInterceptors } from '@/app/utils/fetchInterceptors';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import ModifyCustomerModal from '@/app/modal/modifyCustomer';
+import { useModalStore } from '@/store/useModalStore';
 
 interface CustomerInfo {
+  id: number;
   name: string;
   phone_number: string | number;
   memo?: string;
@@ -16,7 +18,7 @@ interface CustomerInfo {
 export default function CustomerDetailPage() {
   const { id } = useParams();
   const [customer, setCustomer] = useState<CustomerInfo | null>(null);
-  const [openModal, setOpenModal] = useState();
+  const openModal = useModalStore((state) => state.openModal)
 
   useEffect(() => {
     async function fetchCustomer() {
@@ -41,13 +43,6 @@ export default function CustomerDetailPage() {
     );
   }
 
-  // 정보 수정 시
-  const modifyInfo = (customer: CustomerInfo) => {
-    return (
-      <ModifyCustomerModal name={customer.name} phone_number={customer.phone_number} group_name={customer.group_name} memo={customer.memo} />
-    )
-  }
-
   return (
     <div className="mx-auto py-6 px-4 sm:px-6 lg:px-8 ">
       <h1 className="text-2xl font-bold mb-2">고객 상세</h1>
@@ -57,7 +52,14 @@ export default function CustomerDetailPage() {
       <section className="bg-white mb-8">
         <div className='border-b pb-2 mb-4 flex items-center justify-between'>
           <h2 className="text-xl font-semibold">고객 정보</h2>
-          <button type={'button'} className={'p-2 pl-3 pr-3 cursor-pointer rounded-lg bg-violet-400 hover:bg-violet-600 text-white'} onClick={() => modifyInfo(customer)}>수정</button>
+           {/* 수정 버튼 */}
+          <button
+            type={'button'} 
+            className={'p-2 pl-3 pr-3 cursor-pointer rounded-lg bg-violet-400 hover:bg-violet-600 text-white'} 
+            onClick={() => openModal(<ModifyCustomerModal customer={customer}/>)}
+          >
+            수정
+          </button>
         </div>
 
         <div className="w-full border border-gray-200 rounded-lg overflow-hidden">

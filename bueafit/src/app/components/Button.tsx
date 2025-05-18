@@ -45,8 +45,7 @@ export default function Button({
             type={type}
             onClick={handleClick}
             disabled={isLoading}
-            className={`
-                w-full
+            className={`                
                 bg-violet-400 hover:bg-violet-600
                 text-white font-semibold
                 py-2 px-4

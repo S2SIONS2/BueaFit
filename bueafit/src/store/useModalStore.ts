@@ -1,19 +1,17 @@
-import { create } from 'zustand';
+// store/useModalStore.ts
+import { create } from "zustand";
+import { ReactNode } from "react";
 
-type CustomerModalStore = {
+interface ModalState {
   isOpen: boolean;
-  mode: 'create' | 'edit';
-  data: any;
-  openCreate: () => void;
-  openEdit: (data: any) => void;
-  close: () => void;
-};
+  component: ReactNode | null;
+  openModal: (component: ReactNode) => void;
+  closeModal: () => void;
+}
 
-export const useModalStore = create<CustomerModalStore>((set) => ({
+export const useModalStore = create<ModalState>((set) => ({
   isOpen: false,
-  mode: 'create',
-  data: null,
-  openCreate: () => set({ isOpen: true, mode: 'create', data: null }),
-  openEdit: (data) => set({ isOpen: true, mode: 'edit', data }),
-  close: () => set({ isOpen: false, data: null }),
+  component: null,
+  openModal: (component) => set({ isOpen: true, component }),
+  closeModal: () => set({ isOpen: false, component: null }),
 }));

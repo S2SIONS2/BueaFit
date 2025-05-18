@@ -112,7 +112,7 @@ export default function Page() {
           />
         </div>
         <div className="pt-4">
-          <Button type="button" onClick={login}>로그인</Button>
+          <Button type="button" className="w-full" onClick={login}>로그인</Button>
         </div>
       </form>
       <Link href={'/signup'}>

@@ -1,6 +1,7 @@
 'use client';
 
 import MainNav from "@/app/components/MainNav"
+import Modal from "@/app/components/modal";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useAuthStore } from "@/store/useAuthStore";
 import { usePathname, useRouter } from "next/navigation";
@@ -46,6 +47,7 @@ export default function RootLayout({
         <main className="w-[calc(100%-350px)] overflow-auto">
           {children}
         </main>
+        <Modal />
       </div>
     )
   }
