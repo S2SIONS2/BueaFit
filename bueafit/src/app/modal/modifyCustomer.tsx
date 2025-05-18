@@ -8,6 +8,7 @@ import { useModalStore } from "@/store/useModalStore";
 
 interface ModifyProps {
     customer: CustomerInfo;
+    onClose: () => void;
 }
 
 interface CustomerInfo {
@@ -18,7 +19,7 @@ interface CustomerInfo {
     group_name?: string;
 }
 
-export default function ModifyCustomerModal({customer}: ModifyProps) {
+export default function ModifyCustomerModal({customer, onClose}: ModifyProps,) {
     const [modifyGroup, setModifyGroup] = useState(customer.group_name || '');
     const [modifyName, setModifyName] = useState(customer.name || '');
     const [modifyPhone, setModifyPhone] = useState(customer.phone_number || '');
@@ -30,7 +31,24 @@ export default function ModifyCustomerModal({customer}: ModifyProps) {
 
     // 내용 수정
     const modify = async () => {
-        return;
+        const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/phonebooks/${customer.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                group_name: modifyGroup,
+                name: modifyName,
+                phone_number: modifyPhone,
+                memo: modifyMemo
+            })
+        })
+
+        if(res.status === 200) {
+            onClose()
+            closeModal();
+            
+        }
     }
     // 고객 삭제
     const deleteCustomer = async () => {

@@ -18,7 +18,14 @@ interface CustomerInfo {
 export default function CustomerDetailPage() {
   const { id } = useParams();
   const [customer, setCustomer] = useState<CustomerInfo | null>(null);
+
   const openModal = useModalStore((state) => state.openModal)
+
+  // 모달 닫힘 체크
+  const [checkClose, setCheckClose] = useState(false);
+  const handleModalclose = () => {
+    setCheckClose(true);
+  };
 
   useEffect(() => {
     async function fetchCustomer() {
@@ -33,7 +40,7 @@ export default function CustomerDetailPage() {
     }
 
     fetchCustomer();
-  }, [id]);
+  }, [id, checkClose]);
 
   if (!customer) {
     return (
@@ -56,7 +63,7 @@ export default function CustomerDetailPage() {
           <button
             type={'button'} 
             className={'p-2 pl-3 pr-3 cursor-pointer rounded-lg bg-violet-400 hover:bg-violet-600 text-white'} 
-            onClick={() => openModal(<ModifyCustomerModal customer={customer}/>)}
+            onClick={() => openModal(<ModifyCustomerModal customer={customer} onClose={handleModalclose}/>)}
           >
             수정
           </button>
