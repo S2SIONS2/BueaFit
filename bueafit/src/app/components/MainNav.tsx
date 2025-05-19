@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket, faCaretDown, faSprayCan } from "@fortawesome/free-solid-svg-icons";
+import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket, faCaretDown, faSprayCan, faCircle, faCalendarDay } from "@fortawesome/free-solid-svg-icons";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { fetchInterceptors } from "../utils/fetchInterceptors";
@@ -91,6 +91,54 @@ export default function MainNav() {
                         <FontAwesomeIcon icon={faCalendarCheck} className="text-violet-300 mr-[10px] text-[20px] w-[20px]"/>
                         메인
                     </Link>
+                    <Link 
+                        href={"/store/booking"}
+                        className={`
+                            text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md transition-all
+                            ${
+                                path === '/store/booking' || path === '/store/booking/calendar' 
+                                    ? 'bg-gray-100 text-[#111]'
+                                    : ''
+                            }
+                        `}
+                    >
+                        <FontAwesomeIcon icon={faCalendarDay} className="text-violet-300 mr-[10px] text-[20px] w-[20px]" />
+                        예약 관리
+                    </Link>
+                    {
+                        (path === '/store/booking' || path === '/store/booking/calendar') && (
+                            <ul>
+                                <li className="pl-5">
+                                    <Link 
+                                        href={"/store/booking"} 
+                                        className={`flex items-center gap-2 text-[16px] mb-1 
+                                            ${
+                                                path === '/store/booking'
+                                                    ? 'font-bold'
+                                                    : ''
+                                            }`}
+                                    >
+                                        <FontAwesomeIcon icon={faCircle} className="text-[5px]"/>
+                                        예약 추가
+                                    </Link>
+                                </li>
+                                <li className="pl-5">
+                                    <Link 
+                                        href={"/store/booking/calendar"} 
+                                        className={`flex items-center gap-2 text-[16px] mb-1 
+                                            ${
+                                                path === '/store/booking/calendar'
+                                                    ? 'font-bold'
+                                                    : ''
+                                            }`}
+                                    >
+                                        <FontAwesomeIcon icon={faCircle} className="text-[5px]"/>
+                                        예약 캘린더
+                                    </Link>
+                                </li>
+                            </ul>
+                        )
+                    }
                     <Link
                         href="/store/customer"
                         className={`
@@ -119,6 +167,7 @@ export default function MainNav() {
                         <FontAwesomeIcon icon={faSprayCan} className="text-violet-300 mr-[10px] text-[20px] w-[20px]" />
                         시술 메뉴 관리
                     </Link>
+                    
                 </div>
             </div>
             <div className="flex flex-col text-gray-500 mb-[30px]">

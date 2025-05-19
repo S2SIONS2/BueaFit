@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { fetchInterceptors } from '@/app/utils/fetchInterceptors';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import { useModalStore } from '@/store/useModalStore';
-import ModifyTreatment from '@/app/modal/modifyTreatment';
+import ModifyTreatmentMenu from '@/app/modal/modifyTreatmentMenu';
 
 interface TreatmentInfo {
   id: number;
@@ -70,7 +70,7 @@ export default function CustomerDetailPage() {
           <button
             type={'button'} 
             className={'p-2 pl-3 pr-3 cursor-pointer rounded-lg bg-violet-400 hover:bg-violet-600 text-white'} 
-            onClick={() => openModal(<ModifyTreatment treatment={treatment} onClose={handleModalclose}/>)}
+            onClick={() => openModal(<ModifyTreatmentMenu treatment={treatment[0]} onClose={handleModalclose}/>)}
           >
             수정
           </button>

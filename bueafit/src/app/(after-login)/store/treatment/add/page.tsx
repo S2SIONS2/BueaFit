@@ -269,7 +269,7 @@ export default function Page() {
                             type="button"
                             className="w-full h-[40px] cursor-pointer border border-gray-300 box-border"
                             onClick={() => {
-                                if(name === "" && menu === "" && time === null && price === "" ) {
+                                if(name === "" && menu === "" && time === 0 && price === "" ) {
                                     route.push('/store/treatment');
                                 }else {
                                     if(confirm('작성된 정보가 있습니다. 정말 취소하시겠습니까?')) {

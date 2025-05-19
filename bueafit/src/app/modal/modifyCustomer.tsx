@@ -80,7 +80,6 @@ export default function ModifyCustomerModal({customer, onClose}: ModifyProps,) {
 
         
         const data = await res.json()
-        console.log(data)
         
         if(res.status === 409 && data.detail.code === 'PHONEBOOK_CONFLICT') {
             alert('이미 등록된 전화번호입니다.');
