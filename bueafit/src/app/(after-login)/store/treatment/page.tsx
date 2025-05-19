@@ -1,6 +1,6 @@
 'use client';
 
-import LoadingSpinner from "@/app/components/LoadingSpinner";
+import TreatmentSkeleton from "@/app/components/skeleton/treatment-skeleton";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useAuthStore } from "@/store/useAuthStore";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
@@ -43,14 +43,6 @@ export default function Page() {
         fetchTreatment();
     }, [])
 
-    if(loading) {
-        return (
-            <div className="flex items-center justify-center">
-                <LoadingSpinner className="w-10 h-10"/>
-            </div>
-        )
-    }
-
     return (
         <div className="p-6 space-y-6 bg-white">
             <section className="flex items-center justify-between pb-4">
@@ -66,10 +58,17 @@ export default function Page() {
                     시술 추가
                 </Link>
             </section>
-
+            
             <section className="mt-5">
                 {
-                    menu.map((item) => (
+                    loading ? (
+                        <>
+                            <TreatmentSkeleton />
+                            <TreatmentSkeleton />
+                            <TreatmentSkeleton />
+                        </>
+                    ) : (
+                        menu.map((item) => (
                         <article 
                             key={item.id} 
                             className="cursor-pointer p-3 shadow rounded-md mb-4 border border-gray-300"
@@ -102,7 +101,8 @@ export default function Page() {
                                 ))}
                             </div>
                         </article>
-                    ))
+                        ))
+                    )
                 }
             </section>
         </div>
