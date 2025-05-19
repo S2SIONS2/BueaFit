@@ -1,5 +1,6 @@
 'use client';
 
+import LoadingSpinner from "@/app/components/LoadingSpinner";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useAuthStore } from "@/store/useAuthStore";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
@@ -11,28 +12,44 @@ import { useEffect, useState } from "react";
 export default function Page() {
     const route = useRouter();
     const [menu, setMenu] = useState<any[]>([]); // 시술 메뉴 
+    const [loading, setLoading] = useState(true); // 로딩 상태
 
     // access token
     const accessToken = useAuthStore.getState().access_token;
 
     // 시술 메뉴 조회
     const fetchTreatment = async () => {
-        const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatment-menus`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
-            },
-        })
-        const data = await res.json()
-        
-        if(res.status === 200){            
-            setMenu(data.items);}
+        try {
+            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatment-menus`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            const data = await res.json()
+            
+            if(res.status === 200){            
+                setMenu(data.items);
+            }
+        }catch(e) {
+            console.error(e);
+        }finally {
+            setLoading(false);
         }
+    }
         
     useEffect(() => {
         fetchTreatment();
     }, [])
+
+    if(loading) {
+        return (
+            <div className="flex items-center justify-center">
+                <LoadingSpinner className="w-10 h-10"/>
+            </div>
+        )
+    }
 
     return (
         <div className="p-6 space-y-6 bg-white">
