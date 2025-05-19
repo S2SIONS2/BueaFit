@@ -35,7 +35,7 @@ export default function Pagination({ current, total, onPageChange }: Props) {
       start = Math.max(1, end - visibleRange + 1);
     }
 
-    const pages = [];
+    const pages: number[] = [];
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }

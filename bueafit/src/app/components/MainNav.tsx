@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket, faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import { faStore, faCalendarCheck, faUserPen, faGear, faRightFromBracket, faCaretDown, faSprayCan } from "@fortawesome/free-solid-svg-icons";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { fetchInterceptors } from "../utils/fetchInterceptors";
@@ -104,6 +104,20 @@ export default function MainNav() {
                     >
                         <FontAwesomeIcon icon={faUserPen} className="text-violet-300 mr-[10px] text-[20px] w-[20px]" />
                         고객 관리
+                    </Link>
+                    <Link 
+                        href={"/store/treatment"}
+                        className={`
+                            text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md transition-all
+                            ${
+                                path === '/store/treatment' 
+                                    ? 'bg-gray-100 text-[#111]'
+                                    : ''
+                            }
+                        `}
+                    >
+                        <FontAwesomeIcon icon={faSprayCan} className="text-violet-300 mr-[10px] text-[20px] w-[20px]" />
+                        시술 메뉴 관리
                     </Link>
                 </div>
             </div>

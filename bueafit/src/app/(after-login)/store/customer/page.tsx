@@ -84,7 +84,7 @@ export default function Page() {
                 </Link>
             </section>
 
-            <section className="mt-6">
+            <section className="mt-6 min-h-[414px]">
                 <ul className="w-full grid grid-cols-10 bg-gray-100 text-sm font-semibold text-gray-700 px-4 py-2 rounded-t">
                     <li className="flex items-center">
                     <FontAwesomeIcon icon={faUser} className="text-gray-500" size="sm" />
@@ -127,12 +127,12 @@ export default function Page() {
                     }
                 </ul>
 
-                <Pagination
-                    current={page}
-                    total={totalPages}
-                    onPageChange={(newPage) => setPage(newPage)}
-                />
             </section>
+            <Pagination
+                current={page}
+                total={totalPages}
+                onPageChange={(newPage) => setPage(newPage)}
+            />
         </div>
     );
 }
