@@ -176,6 +176,12 @@ export default function Page() {
     // 예약 등록
     const newReserve = async () => {
         try {
+            // 완료 시간 계산
+            const finished_at = new Date(
+                new Date(`${reserveDate}T${reserveTime}`).getTime() + treatmentTime * 60000
+                ).toISOString().slice(0, 19);
+                
+            // 시술 예약 
             const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatments`, {
                 method: 'POST',
                 headers: {
@@ -186,7 +192,7 @@ export default function Page() {
                     phonebook_id: customerId,                    
                     reserved_at: reserveDate + 'T' + reserveTime,
                     status: 'RESERVED',
-                    finished_at: reserveDate + 'T' + treatmentTime,
+                    finished_at: finished_at,
                     memo: memo,
                     treatment_items: [
                         {   
