@@ -6,6 +6,9 @@ import { fetchInterceptors } from '@/app/utils/fetchInterceptors';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import { useModalStore } from '@/store/useModalStore';
 import ModifyTreatmentMenu from '@/app/modal/modifyTreatmentMenu';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import ModifyTreatmentDetail from '@/app/modal/modifyTreatmentDetail';
 
 interface TreatmentInfo {
   id: number;
@@ -74,38 +77,45 @@ export default function CustomerDetailPage() {
             수정
           </button>
         </div>
-        {
-        treatment.map((treatment) => (
-            <div
-                key={treatment.id}
-                className="w-full mb-6 border border-gray-300 rounded-xl p-4 shadow-sm bg-white"
-            >
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                    시술 상세
-                </h3>
+          {
+            treatment.map((treatment) => (
+                <div
+                    key={treatment.id}
+                    className="w-full mb-6 border border-gray-300 rounded-xl p-4 shadow-sm bg-white"
+                >
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                        시술 상세
+                    </h3>
 
-                <div className="space-y-3">
-                    {treatment.details.map((detail: any) => (
-                        <div
-                            key={detail.id}
-                            className="border border-gray-200 rounded-md p-4 bg-gray-50"
-                        >
-                            <div className="text-sm text-gray-500 mb-1">시술 명</div>
-                            <div className="text-base font-medium text-gray-800">{detail.name}</div>
+                    <div className="space-y-3">
+                        {treatment.details.map((detail: any) => (
+                            <div
+                                key={detail.id}
+                                className="border border-gray-200 rounded-md p-4 bg-gray-50"
+                            >   
+                                <div className='flex items-center justify-between'>
+                                  <div className="text-sm text-gray-500 mb-1">시술 명</div>
+                                  <button type='button' className='cursor-pointer text-gray-600 hover:text-gray-700'
+                                     onClick={() => openModal(<ModifyTreatmentDetail detail={detail} onClose={handleModalclose}/>)}
+                                  >
+                                    <FontAwesomeIcon icon={faPenToSquare} />
+                                  </button>
+                                </div>
+                                <div className="text-base font-medium text-gray-800">{detail.name}</div>
 
-                            <div className="mt-2 text-sm text-gray-600">
-                                소요 시간: {
-                                    `${Math.floor(detail.duration_min / 60) > 0 ? `${Math.floor(detail.duration_min / 60)}시간 ` : ""}`
-                                    + `${detail.duration_min % 60 > 0 ? `${detail.duration_min % 60}분` : ""}`
-                                }
-                                / 가격: {detail.base_price.toLocaleString()}원
+                                <div className="mt-2 text-sm text-gray-600">
+                                    소요 시간: {
+                                        `${Math.floor(detail.duration_min / 60) > 0 ? `${Math.floor(detail.duration_min / 60)}시간 ` : ""}`
+                                        + `${detail.duration_min % 60 > 0 ? `${detail.duration_min % 60}분` : ""}`
+                                    }
+                                    / 가격: {detail.base_price.toLocaleString()}원
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
-        ))
-    }
+            ))
+        }
       </section>
     </div>
   );

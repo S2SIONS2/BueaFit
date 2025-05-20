@@ -25,6 +25,7 @@ export default function Button({
     const handleClick = async (e: { preventDefault: () => void; stopPropagation: () => void; }) => {
         if(lock || isLoading) return;
         setLock(true);
+        setIsLoading(true);
         e.preventDefault();
         e.stopPropagation();
 

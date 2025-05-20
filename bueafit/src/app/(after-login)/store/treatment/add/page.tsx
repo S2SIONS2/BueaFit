@@ -103,7 +103,7 @@ export default function Page() {
         if(menuId === null) {            
             newMenu();            
         }
-
+        
         // 등록 된 시술 메뉴 하위로 시술 종류 등록
         try {
             // name 없을 때
@@ -285,7 +285,7 @@ export default function Page() {
                             className="w-full h-[40px] bg-violet-400 hover:bg-violet-500 text-white font-semibold py-2 px-4"
                             onClick={() => {newTreatment()}}
                         >
-                        고객 등록
+                        시술 추가
                         </Button>
                     </div>
                 </section>
