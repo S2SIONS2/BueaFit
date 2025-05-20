@@ -59,7 +59,7 @@ export default function Page() {
 
     // 1. 신규 시술 메뉴 등록
     const newMenu = async () => {
-        try {
+        try {            
             // input required 충족 안될 때
             // menu 없을 때
             if(menu === "") {
@@ -100,8 +100,18 @@ export default function Page() {
     // 2. 시술 메뉴 등록 후 시술 종류 등록
     const newTreatment = async () => {
         // 먼저 시술 메뉴 등록
-        if(menuId === null) {            
-            newMenu();            
+        if(menuId === null) {
+            // 메뉴 선택 안하고 글로 썼을 때
+            console.log(menuId);
+            if(menu !== "") {
+                menuList.filter((item) => {
+                    if(item.name === menu) {
+                        setMenuId(item.id);
+                    }
+                })
+            }else {
+                newMenu();            
+            }
         }
         
         // 등록 된 시술 메뉴 하위로 시술 종류 등록
