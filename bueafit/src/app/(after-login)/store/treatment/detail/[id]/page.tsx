@@ -30,7 +30,7 @@ export default function CustomerDetailPage() {
   // 모달 닫힘 체크
   const [checkClose, setCheckClose] = useState(false);
   const handleModalclose = () => {
-    setCheckClose(true);
+    setCheckClose(!checkClose);
   };
 
   useEffect(() => {
@@ -44,8 +44,7 @@ export default function CustomerDetailPage() {
       const data = await res.json();
       const items = data.items;
       const filteredData = items.filter((item: TreatmentInfo) => item.id === Number(id));
-      setTreatment(filteredData);
-      console.log(filteredData);
+      setTreatment(filteredData);      
     }
 
     fetchCustomer();

@@ -24,7 +24,7 @@ export default function CustomerDetailPage() {
   // 모달 닫힘 체크
   const [checkClose, setCheckClose] = useState(false);
   const handleModalclose = () => {
-    setCheckClose(true);
+    setCheckClose(!checkClose);
   };
 
   useEffect(() => {
