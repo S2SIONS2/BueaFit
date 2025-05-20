@@ -1,9 +1,13 @@
 'use client';
 
 import Button from "@/app/components/Button";
+import CustomSelect from "@/app/components/CustomSelect";
 import AddCustomerModal from "@/app/modal/addCustomer";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useModalStore } from "@/store/useModalStore";
+import { faX } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -31,11 +35,73 @@ export default function Page() {
     const [customerList, setCustomerList] = useState<any[]>([]); // 고객 리스트
     const [showCustomerList, setShowCustomerList] = useState(false); // 고객 리스트 노출 여부
 
-    const [reserveDate, setReserveDate] = useState(''); // 예약 날짜
+    // 시술 예약 날짜 기본 값
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayString = `${year}-${month}-${day}`;
+    
+    const [reserveDate, setReserveDate] = useState(todayString || ''); // 예약 날짜
     const [reserveTime, setReserveTime] = useState(''); // 예약 시간
+    const timeOptions = [
+        { value: "08:00:00", label: "오전 8:00" },
+        { value: "08:30:00", label: "오전 8:30" },
+        { value: "09:00:00", label: "오전 9:00" },
+        { value: "09:30:00", label: "오전 9:30" },
+        { value: "10:00:00", label: "오전 10:00" },
+        { value: "10:30:00", label: "오전 10:30" },
+        { value: "11:00:00", label: "오전 11:00" },
+        { value: "11:30:00", label: "오전 11:30" },
+        { value: "12:00:00", label: "오후 12:00" },
+        { value: "12:30:00", label: "오후 12:30" },
+        { value: "13:00:00", label: "오후 1:00" },
+        { value: "13:30:00", label: "오후 1:30" },
+        { value: "14:00:00", label: "오후 2:00" },
+        { value: "14:30:00", label: "오후 2:30" },
+        { value: "15:00:00", label: "오후 3:00" },
+        { value: "15:30:00", label: "오후 3:30" },
+        { value: "16:00:00", label: "오후 4:00" },
+        { value: "16:30:00", label: "오후 4:30" },
+        { value: "17:00:00", label: "오후 5:00" },
+        { value: "17:30:00", label: "오후 5:30" },
+        { value: "18:00:00", label: "오후 6.00" },
+        { value: "18:30:00", label: "오후 6:30" },
+        { value: "19:00:00", label: "오후 7:00" },
+        { value: "19:30:00", label: "오후 7:30" },
+        { value: "20:00:00", label: "오후 8.00" },
+        { value: "20:30:00", label: "오후 8.30" },
+        { value: "21:00:00", label: "오후 9.00" },
+        { value: "21:30:00", label: "오후 9.30" },
+        { value: "22:00:00", label: "오후 10.00" },
+        { value: "22:30:00", label: "오후 10.30" },
+        { value: "23:00:00", label: "오후 11.00" },
+        { value: "23:30:00", label: "오후 11.30" }
+    ];
 
+    const [treatmentList, setTreatmentList] = useState<any[]>([]); // 시술 리스트
+    const [showTreatmentList, setShowTreatmentList] = useState(false); // 시술 리스트 노출 여부
+    const [treatmentId, setTreatmentId] = useState<number | null>(null); // 시술 ID
     const [treatmentName, setTreatmentName] = useState(''); // 시술 이름
     const [treatmentTime, setTreatmentTime] = useState(0); // 시술 소요 시간
+    const treatmentTimeOptions = [
+        { value: "30", label: "30분" },
+        { value: "60", label: "1시간" },
+        { value: "90", label: "1시간 30분" },
+        { value: "120", label: "2시간" },
+        { value: "150", label: "2시간 30분" },
+        { value: "180", label: "3시간" },
+        { value: "210", label: "3시간 30분" },
+        { value: "240", label: "4시간" },
+        { value: "270", label: "4시간 30분" },
+        { value: "300", label: "5시간" },
+        { value: "330", label: "5시간 30분" },
+        { value: "360", label: "6시간" },
+        { value: "390", label: "6시간 30분" },
+        { value: "420", label: "7시간" },
+        { value: "450", label: "7시간 30분" },
+        { value: "480", label: "8시간" }
+    ];
     const [treatmentPrice, setTreatmentPrice] = useState(0); // 시술 가격
 
     const [memo, setMemo] = useState(''); // 메모
@@ -43,8 +109,8 @@ export default function Page() {
     const nameRef = useRef<HTMLInputElement>(null); // 고객 이름 input ref
     const treatmentNameRef = useRef<HTMLInputElement>(null); // 시술 이름 input ref
     const reserveDateRef = useRef<HTMLInputElement>(null); // 예약 날짜 input ref
-    const reserveTimeRef = useRef<HTMLInputElement>(null); // 예약 시간 input ref
-    const treatmentTimeRef = useRef<HTMLSelectElement>(null); // 시술 소요 시간 select ref
+    const reserveTimeRef = useRef<HTMLUListElement>(null); // 예약 시간 select ref
+    const treatmentTimeRef = useRef<HTMLUListElement>(null); // 시술 소요 시간 select ref
     const treatmentPriceRef = useRef<HTMLInputElement>(null); // 시술 가격 input ref
 
     const route = useRouter();
@@ -81,15 +147,76 @@ export default function Page() {
         searchCustomer();
     }, [name])
 
+    // 시술 검색
+    const searchTreatment = async () => {
+        try {
+            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatment-menus`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            const data = await res.json();
+            if(res.status === 200) {
+                const filteredData = data.items.filter((treatment: any) => treatment.name.includes(treatmentName));
+                setTreatmentList(filteredData);
+            }
+        }catch(e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(() => {
+        searchTreatment();
+    }, [treatmentName])
+
+    const accessToken = useAuthStore.getState().access_token;
+
     // 예약 등록
     const newReserve = async () => {
-        return;
+        try {
+            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    phonebook_id: customerId,                    
+                    reserved_at: reserveDate + 'T' + reserveTime,
+                    status: 'RESERVED',
+                    finished_at: reserveDate + 'T' + treatmentTime,
+                    memo: memo,
+                    treatment_items: [
+                        {   
+                            menu_detail_id: treatmentId,                            
+                            base_price: treatmentPrice,
+                            duration_min: treatmentTime,
+                        }
+                    ]
+                })
+            })
+            if(res.status === 201) {
+                alert('예약이 등록되었습니다.');
+                route.push('/store/booking/calendar');
+            }else if(res.status === 422) {
+                const errorMsg = await res.json();
+                alert(errorMsg.detail[0].msg);
+            }else {
+                alert('예약 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+            }       
+        }catch(e) {
+            console.error(e);
+            alert('예약 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
     }
 
     const [step, setStep] = useState(1); // step 1: 고객 작성 및 고객 등록, step 2: 예약 등록
     // step 1: 고객 작성 및 고객 등록
     const handleStep1 = () => (
-        <section className="space-y-6 rounded-2xl mb-8 flex flex-col justify-between">
+        <section className="space-y-6 rounded-2xl mb-8 flex flex-col justify-between"             
+        >
             <div className="space-y-1 relative">
                 <label className="block text-sm font-medium text-gray-700">
                     고객 이름<span className="text-red-600 ml-1">*</span>
@@ -107,12 +234,23 @@ export default function Page() {
                 {
                     showCustomerList && (
                         <ul className="absolute z-10 bg-white w-full border-l border-r border-gray-400 max-h-40 overflow-y-auto p-0" onMouseDown={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-end p-2">
+                                <button type="button"
+                                    className="text-gray-500 hover:text-gray-700 cursor-pointer"
+                                    onClick={() => {
+                                        setShowCustomerList(false);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faX} />
+                                </button>
+                            </div>
                             {
                                 customerList.map((customer, index) => (
                                     <li
                                         key={index}
                                         className="p-3 border-b border-gray-200 hover:bg-violet-50 cursor-pointer transition-colors"
-                                        onClick={() => {
+                                        onClick={(e) => {
+                                            e.stopPropagation()
                                             setName(customer.name);
                                             setCustomerId(customer.id);
                                             setShowCustomerList(false);
@@ -170,7 +308,7 @@ export default function Page() {
                                 route.push('/store/booking/calendar');
                             }else {
                                 if(confirm('작성된 정보가 있습니다. 정말 취소하시겠습니까?')) {
-                                    // route.push('/store/booking/calendar')
+                                    route.push('/store/booking/calendar')
                                 }
                             }
                         }}
@@ -196,13 +334,12 @@ export default function Page() {
                     예약 날짜<span className="text-red-600 ml-1">*</span>
                 </label>
                 <input
-                    type="datepicker"
+                    type="date"
                     required
                     placeholder="오늘 날짜"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
                     value={reserveDate}
-                    onChange={(e) => setReserveDate(e.target.value)}
-                    // onFocus={() => showCustomerList(false)}
+                    onChange={(e) => setReserveDate(e.target.value)}                    
                     ref={reserveDateRef}   
                 />
             </div>
@@ -211,19 +348,16 @@ export default function Page() {
                 <label className="block text-sm font-medium text-gray-700">
                     예약 시간<span className="text-red-600 ml-1">*</span>
                 </label>
-                <input
-                    type="datepicker"
-                    required
-                    placeholder="오늘 날짜"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
+                <CustomSelect
                     value={reserveTime}
-                    onChange={(e) => setReserveTime(e.target.value)}
-                    // onFocus={() => showCustomerList(false)}
-                    ref={reserveTimeRef}   
+                    onChange={setReserveTime}
+                    options={timeOptions}
+                    placeholder="예약 시간을 선택하세요"
+                    ref={reserveTimeRef}
                 />
             </div>
 
-                <div className="space-y-1">
+            <div className="space-y-1 relative">
                 <label className="block text-sm font-medium text-gray-700">
                     시술 이름<span className="text-red-600 ml-1">*</span>
                 </label>
@@ -234,9 +368,57 @@ export default function Page() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
                     value={treatmentName}
                     onChange={(e) => setTreatmentName(e.target.value)}
-                    // onFocus={() => showCustomerList(false)}
+                    onFocus={() => setShowTreatmentList(true)}
                     ref={treatmentNameRef}   
                 />
+                {   // 시술 리스트
+                    showTreatmentList && (
+                        <ul className="absolute z-10 bg-white w-full border-l border-r border-gray-400 max-h-40 overflow-y-auto p-0" onMouseDown={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-end p-2">
+                                <button type="button"
+                                    className="text-gray-500 hover:text-gray-700 cursor-pointer"
+                                    onClick={() => {
+                                        setShowTreatmentList(false);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faX} />
+                                </button>
+                            </div>
+                            {
+                                treatmentList.map((treatment, index) => (
+                                    <li
+                                        key={index}
+                                        className="border-b border-gray-200"                                        
+                                    >   
+                                        {
+                                            treatment.details.map((detail: any, index: number) => (
+                                                <div key={index} 
+                                                    className="flex items-center justify-between mb-1 hover:bg-violet-50 cursor-pointer transition-colors p-3 "
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        setTreatmentName(detail.name);
+                                                        setTreatmentPrice(detail.base_price);
+                                                        setTreatmentTime(detail.duration_min);
+                                                        setTreatmentId(detail.id);
+                                                        setShowTreatmentList(false);
+                                                    }}
+                                                >
+                                                    <span className="text-sm font-medium text-gray-800">
+                                                        {detail.name}
+                                                    </span>
+                                                    <span className="text-sm text-gray-500">
+                                                        {detail.base_price} 원
+                                                    </span>
+                                                </div>                                                
+                                            ))
+                                        }
+                                    </li>
+
+                                ))
+                            }
+                        </ul>
+                    )
+                }
             </div>
 
             <div className="space-y-1">
@@ -244,22 +426,13 @@ export default function Page() {
                     시술 소요 시간<span className="text-red-600 ml-1">*</span>
                 </label>
                 <div className="flex gap-2">
-                    <select 
-                        className="w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                        value={treatmentTime}
-                        onChange={(e) => setTreatmentTime(Number(e.target.value))}
-                        // onFocus={() => showCustomerList(false)}
+                    <CustomSelect
+                        value={treatmentTime.toString()}
+                        onChange={(val) => setTreatmentTime(Number(val))}
+                        options={treatmentTimeOptions}
+                        placeholder="예약 시간을 선택하세요"
                         ref={treatmentTimeRef}
-                    >
-                        <option value={0}>0시간</option>
-                        <option value={60}>1시간</option>
-                        <option value={120}>2시간</option>
-                        <option value={180}>3시간</option>
-                        <option value={240}>4시간</option>
-                        <option value={300}>5시간</option>
-                        <option value={360}>6시간</option>
-                        <option value={420}>7시간 이상</option>
-                    </select>
+                    />               
                 </div>
             </div>
 
@@ -274,8 +447,7 @@ export default function Page() {
                     placeholder="시술 가격을 입력해주세요."
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
                     value={treatmentPrice}
-                    onChange={(e) => setTreatmentPrice(Number(e.target.value))}
-                    // onFocus={() => showCustomerList(false)}
+                    onChange={(e) => setTreatmentPrice(Number(e.target.value))}                    
                     ref={treatmentPriceRef}
                 />
             </div>
@@ -288,11 +460,10 @@ export default function Page() {
                     type="text"
                     min={0}
                     required
-                    placeholder="시술 가격을 입력해주세요."
+                    placeholder="메모를 적어주세요."
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
                     value={memo}
-                    onChange={(e) => setMemo(e.target.value)}
-                    // onFocus={() => showCustomerList(false)}                            
+                    onChange={(e) => setMemo(e.target.value)}                                             
                 />
             </div>
             
