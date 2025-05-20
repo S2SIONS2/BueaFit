@@ -2,12 +2,32 @@
 
 import Button from "@/app/components/Button";
 import AddCustomerModal from "@/app/modal/addCustomer";
+import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useModalStore } from "@/store/useModalStore";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+interface NewCustomer {
+    id: number;
+    name: string;
+    phone_number: string;
+    group_name: string;
+    memo: string;
+}
 
 export default function Page() {
+    // 신규 등록된 고객 리스트
+    const [newCustomerList, setNewCustomerList] = useState<NewCustomer[]>([]);
+    const handleAddCustomer = (newCustomer: NewCustomer) => {
+        setNewCustomerList(prev => [...prev, newCustomer]);
+    };
+    useEffect(() => {
+        setName(newCustomerList[0]?.name || '');
+        setCustomerId(newCustomerList[0]?.id || null);
+    }, [newCustomerList])
+    
     const [name, setName] = useState(''); // 고객 이름
+    const [customerId, setCustomerId] = useState<number | null>(null); // 고객 ID
     const [customerList, setCustomerList] = useState<any[]>([]); // 고객 리스트
     const [showCustomerList, setShowCustomerList] = useState(false); // 고객 리스트 노출 여부
 
@@ -29,13 +49,37 @@ export default function Page() {
 
     const route = useRouter();
 
-    // modal control
+    // modal control - 신규 고객 등록
     const openModal = useModalStore((state) => state.openModal);
     // 모달 닫힘 체크
     const [checkClose, setCheckClose] = useState(false);
     const handleModalclose = () => {
         setCheckClose(!checkClose);
     };
+
+    // 고객 검색
+    const searchCustomer = async () => {
+        try {
+            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/phonebooks`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            const data = await res.json();
+            if(res.status === 200) {
+                const filteredData = data.items.filter((customer: any) => customer.name.includes(name));
+                setCustomerList(filteredData);
+            }
+        }catch(e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(() => {
+        searchCustomer();
+    }, [name])
 
     // 예약 등록
     const newReserve = async () => {
@@ -62,22 +106,40 @@ export default function Page() {
                 />
                 {
                     showCustomerList && (
-                        <ul className="absolute z-10 bg-white w-full border-l border-r border-t border-gray-400 max-h-40 overflow-y-auto p-0" onMouseDown={(e) => e.stopPropagation()}>
+                        <ul className="absolute z-10 bg-white w-full border-l border-r border-gray-400 max-h-40 overflow-y-auto p-0" onMouseDown={(e) => e.stopPropagation()}>
                             {
                                 customerList.map((customer, index) => (
                                     <li
                                         key={index}
-                                        className="text-sm text-gray-800 cursor-pointer hover:text-violet-500 h-[35px] border-b border-gray-400 flex items-center pl-2"
+                                        className="p-3 border-b border-gray-200 hover:bg-violet-50 cursor-pointer transition-colors"
                                         onClick={() => {
-                                            // setMenu(customer.name);
-                                            // setMenuId(customer.id);
-                                            // console.log(customer.id);
-                                            // setMenuList([]);
-                                            // setShowcustomerList(false);                                        
+                                            setName(customer.name);
+                                            setCustomerId(customer.id);
+                                            setShowCustomerList(false);
                                         }}
                                     >
-                                        {/* {menu.name} */}
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-sm font-medium text-gray-800">
+                                                {
+                                                    customer.group_name && (
+                                                        <span>
+                                                            [{customer.group_name}]
+                                                        </span>        
+                                                    )
+                                                }
+                                                {customer.name}
+                                            </span>
+                                            <span className="text-sm text-gray-500">
+                                                {customer.phone_number}
+                                            </span>
+                                        </div>
+                                        {customer.memo && (
+                                            <div className="text-xs text-gray-600 indent-[10px]">
+                                                {customer.memo}
+                                            </div>
+                                        )}
                                     </li>
+
                                 ))
                             }   
                         </ul>
@@ -90,9 +152,7 @@ export default function Page() {
                     <button 
                         type="button"
                         className="cursor-pointer text-base text-violet-500 hover:text-violet-600"
-                        onClick={() => {
-                            openModal(<AddCustomerModal onClose={handleModalclose} />)
-                        }}
+                        onClick={() => openModal(<AddCustomerModal onClose={handleModalclose} onAddCustomer={handleAddCustomer}/>)}
                     >
                         + 신규 고객 등록하기
                     </button>

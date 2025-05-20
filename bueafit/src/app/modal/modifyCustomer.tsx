@@ -58,10 +58,10 @@ export default function ModifyCustomerModal({customer, onClose}: ModifyProps,) {
     }
 
     useEffect(() => {
-    if (debouncedGroup !== customer.group_name) {
-        searchGroup();
-    }
-}, [debouncedGroup]);
+        if (debouncedGroup !== customer.group_name) {
+            searchGroup();
+        }
+    }, [debouncedGroup]);
 
     // 내용 수정
     const modify = async () => {

@@ -4,6 +4,7 @@ import Button from "@/app/components/Button";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import useDebounce from "@/app/utils/useDebounce";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useModalStore } from "@/store/useModalStore";
 import { useEffect, useRef, useState } from "react";
 
 type Group = {
@@ -12,7 +13,23 @@ type Group = {
     items: any[];
 };
 
-export default function AddCustomerModal(onClose: () => void) {
+interface ModifyProps {
+    onClose: () => void;
+    onAddCustomer: (customer: NewCustomer) => void;
+}
+
+interface NewCustomer {
+    id: number;
+    name: string;
+    phone_number: string;
+    group_name: string;
+    memo: string;
+    shop_id: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export default function AddCustomerModal({onClose, onAddCustomer}: ModifyProps) {
     const [name, setName] = useState(""); // 이름
     const [phone, setPhone] = useState(""); // 전화번호
     const [group, setGroup] = useState(""); // 그룹
@@ -22,6 +39,9 @@ export default function AddCustomerModal(onClose: () => void) {
     const phoneRef = useRef<HTMLInputElement>(null);
 
     const accessToken = useAuthStore.getState().access_token;
+
+    // 모달 닫기
+    const { closeModal } = useModalStore.getState();
 
     // 그룹 리스트
     const [groupList, setGroupList] = useState<Group[]>([]);
@@ -77,7 +97,10 @@ export default function AddCustomerModal(onClose: () => void) {
             })
             
             if(response.status === 201) {
+                const data = await response.json();
+                onAddCustomer(data);
                 onClose();
+                closeModal();
                 return;
             }
 
@@ -134,7 +157,7 @@ export default function AddCustomerModal(onClose: () => void) {
                         />
                     </div>
 
-                    <div>
+                    <div className="relative">
                         <label className="block mb-2 text-base font-bold font-medium text-gray-700">그룹</label>
                         <input
                             type="text"
@@ -186,9 +209,11 @@ export default function AddCustomerModal(onClose: () => void) {
                             onClick={() => {
                                 if(name === "" && phone === "" && group === "" && memo === "" ) {
                                     onClose();
+                                    closeModal();
                                 }else {
                                     if(confirm('작성된 정보가 있습니다. 정말 취소하시겠습니까?')) {
                                         onClose();
+                                        closeModal();
                                     }
                                 }
                             }}
