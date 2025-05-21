@@ -96,13 +96,13 @@ export default function Page() {
     return (
         <div className="min-h-screen h-full py-6 px-4 sm:px-6 lg:px-8">
             <div className="mx-auto h-full bg-white rounded-2xl flex flex-col justify-between">
-                <div>
+                <div className="grow">
                     <h1 className="text-xl font-bold text-gray-900 mb-2">
                         신규 고객 등록
                     </h1>
                     <p className="mb-8">신규로 등록할 고객 정보를 입력해주세요.</p>
 
-                    <form className="space-y-7 rounded-2xl shadow-sm p-6 mb-8 space-y-4">
+                    <form className="space-y-10 rounded-2xl shadow-sm p-6 h-full max-h-[600px]">
                         <div>
                             <label className="block mb-2 text-base font-bold font-medium text-gray-700">
                                 고객 명

@@ -6,13 +6,14 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 interface Option {
     label: string;
-    value: string;
+    value: string | number;
 }
 
 interface CustomSelectProps {
     options: Option[];
     value: string | number;
-    onChange: (value: string) => void;
+    onChange: (value: any) => void;
+    onFocus?: () => void;
     placeholder?: string;
     ref? : React.Ref<HTMLUListElement> | React.Ref<HTMLDivElement>;
 }
@@ -26,7 +27,7 @@ export default function CustomSelect({
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
-    const selectedLabel = options.find((opt) => opt.value === value)?.label || placeholder;
+    const selectedLabel = options.find((opt) => opt.value == value)?.label || placeholder;
 
     // 클릭 외부 감지하여 드롭다운 닫기
     useEffect(() => {

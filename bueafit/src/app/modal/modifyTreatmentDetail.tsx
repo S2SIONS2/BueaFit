@@ -5,6 +5,7 @@ import { fetchInterceptors } from "../utils/fetchInterceptors";
 import { useAuthStore } from "@/store/useAuthStore";
 import Button from "../components/Button";
 import { useModalStore } from "@/store/useModalStore";
+// import CustomSelect from "../components/CustomSelect";
 
 interface ModifyProps {
     detail: DetailInfo;
@@ -23,12 +24,30 @@ export default function ModifyTreatmentDetail({ detail, onClose }: ModifyProps) 
     const [modifyPrice, setModifyPrice] = useState(detail.base_price || 0);
 
     // 시술 시간 계산
-    const initialHour = Math.floor(detail.duration_min / 60) * 60;
-    const initialMinute = detail.duration_min % 60;
+    // const initialHour = Math.floor(detail.duration_min / 60) * 60;
+    // const initialMinute = detail.duration_min % 60;
+    
+    const [hour, setHour] = useState(0);
+    const [minute, setMinute] = useState(0);
+    const time = hour + minute
+    // const hourOption = [
+    //     { value: 0, label: "0시간" },
+    //     { value: 60, label: "1시간" },
+    //     { value: 120, label: "2시간" },
+    //     { value: 180, label: "3시간" },
+    //     { value: 240, label: "4시간" },
+    //     { value: 300, label: "5시간" },
+    //     { value: 360, label: "6시간" },
+    //     { value: 420, label: "7시간" },
+    //     { value: 480, label: "8시간" }
+    // ];
 
-    const [hour, setHour] = useState(initialHour);
-    const [minute, setMinute] = useState(initialMinute);
-    const time = hour + minute;
+    // const minuteOption = [
+    //     { value: 0, label: "0분" },
+    //     { value: 15, label: "15분" },
+    //     { value: 30, label: "30분" },
+    //     { value: 45, label: "45분" },
+    // ];
 
     const accessToken = useAuthStore.getState().access_token;
     const { closeModal } = useModalStore.getState();
@@ -108,6 +127,20 @@ export default function ModifyTreatmentDetail({ detail, onClose }: ModifyProps) 
                 <label className="relative w-full">
                     <p className="text-sm font-medium text-gray-700 mb-1">시술 시간</p>
                     <div className="flex gap-2">
+                        {/* <CustomSelect
+                            key="hour-select"
+                            value={hour}
+                            onChange={setHour}
+                            placeholder="0시간"
+                            options={hourOption}
+                        />
+                        <CustomSelect
+                            key="minute-select"
+                            value={minute}
+                            onChange={setMinute}
+                            placeholder="0분"
+                            options={minuteOption}
+                        /> */}
                         <select
                             className="w-1/2 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 mb-4 focus:outline-none"
                             value={hour}
@@ -130,8 +163,7 @@ export default function ModifyTreatmentDetail({ detail, onClose }: ModifyProps) 
                             <option value={0}>0분</option>
                             <option value={15}>15분</option>
                             <option value={30}>30분</option>
-                            <option value={45}>45분</option>
-                            <option value={60}>60분</option>
+                            <option value={45}>45분</option>                            
                         </select>
                     </div>
                 </label>

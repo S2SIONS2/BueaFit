@@ -64,7 +64,7 @@ export default function MainNav() {
                     <div className="w-[50px] h-[50px] bg-slate-100 flex items-center justify-center rounded-[50%]">
                         <FontAwesomeIcon icon={faStore} className="text-[25px] text-violet-400" />
                     </div>
-                    <ul className="w-100">
+                    <ul className="w-[calc(100%-50px)]">
                         <li className="text-gray-700 text-base font-bold">
                             <Link href={'/selectstore'} className="flex items-center">
                                 {list.name}
