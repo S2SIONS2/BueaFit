@@ -10,7 +10,7 @@ export default async function Home() {
   }
   
   return (
-    <div>
+    <div className="w-full h-full">
       <LoginNav />
       소개페이지
     </div>

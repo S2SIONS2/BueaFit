@@ -30,7 +30,7 @@ export default function LogOutNav() {
                 <button
                     onClick={logout}
                     className={`
-                        text-gray-800 hover:bg-gray-100 cursor-pointer
+                        text-gray-800 hover:bg-gray-100 cursor-pointer text-xm
                     `}
                 >
                     로그아웃

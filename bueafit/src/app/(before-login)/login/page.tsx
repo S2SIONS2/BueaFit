@@ -77,49 +77,51 @@ export default function Page() {
     }
 
     return(
-    <section className="max-w-md mx-auto mt-20 p-6 bg-white rounded-2xl shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">로그인</h2>
-      <form className="space-y-4">
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            <span className="text-red-900">*</span>
-            이메일
-          </label>
-          <input
-            type="email"
-            required
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2`}
-            value={email}
-            placeholder="solee9802@gmail.com"
-            onKeyDown={(e) => enterLogin(e)}
-            onChange={handleEmail}
-            />
-
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            <span className="text-red-900">*</span>
-            비밀번호
+    <section className="w-full h-[calc(100%-120px)] mx-auto flex flex-col items-center justify-center">
+      <div className="min-w-md p-6 bg-white rounded-2xl shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">로그인</h2>
+        <form className="space-y-4">
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              <span className="text-red-900">*</span>
+              이메일
             </label>
-          <input
-            type="password"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-300"
-            value={pw}
-            placeholder="123456"
-            onKeyDown={(e) => enterLogin(e)}
-            onChange={handlePw}
-          />
-        </div>
-        <div className="pt-4">
-          <Button type="button" className="w-full" onClick={login}>로그인</Button>
-        </div>
-      </form>
-      <Link href={'/signup'}>
-        <p className="mt-[30px] text-sm text-gray-800 underline pb-[1px]">
-            계정이 없으신가요? 회원가입하러 가기
-        </p>
-      </Link>
+            <input
+              type="email"
+              required
+              className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-300`}
+              value={email}
+              placeholder="solee9802@gmail.com"
+              onKeyDown={(e) => enterLogin(e)}
+              onChange={handleEmail}
+              />
+
+          </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              <span className="text-red-900">*</span>
+              비밀번호
+              </label>
+            <input
+              type="password"
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-300"
+              value={pw}
+              placeholder="123456"
+              onKeyDown={(e) => enterLogin(e)}
+              onChange={handlePw}
+            />
+          </div>
+          <div className="pt-4">
+            <Button type="button" className="w-full" onClick={login}>로그인</Button>
+          </div>
+        </form>
+        <Link href={'/signup'}>
+          <p className="mt-[30px] text-sm text-gray-800 underline pb-[1px]">
+              계정이 없으신가요? 회원가입하러 가기
+          </p>
+        </Link>
+      </div>
     </section>
     )
 }
