@@ -28,7 +28,7 @@ export default function Page() {
     // 로그인 구현
     const login = async () => {
         try{
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/login`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -53,12 +53,14 @@ export default function Page() {
               // zustand 메모리에 액세스 토큰 저장
               const access_token = jsonData.access_token;
               setToken(access_token);
-              route.push('/selectstore');
-
               // refresh token local storage에 저장
               const refresh_token = jsonData.refresh_token
               localStorage.setItem('refresh_token', refresh_token);
 
+              // 리프레시 토큰 저장 안되는 것 방지
+              await new Promise((res) => setTimeout(res, 0));
+
+              route.push('/selectstore');
             }
             if(data.status === 401) {
                 alert('이메일이나 비밀번호가 틀렸습니다.')            

@@ -24,11 +24,11 @@ export default function ModifyTreatmentDetail({ detail, onClose }: ModifyProps) 
     const [modifyPrice, setModifyPrice] = useState(detail.base_price || 0);
 
     // 시술 시간 계산
-    // const initialHour = Math.floor(detail.duration_min / 60) * 60;
-    // const initialMinute = detail.duration_min % 60;
+    const initialHour = Math.floor(detail.duration_min / 60) * 60;
+    const initialMinute = detail.duration_min % 60;
     
-    const [hour, setHour] = useState(0);
-    const [minute, setMinute] = useState(0);
+    const [hour, setHour] = useState(initialHour || 0);
+    const [minute, setMinute] = useState(initialMinute || 0);
     const time = hour + minute
     // const hourOption = [
     //     { value: 0, label: "0시간" },

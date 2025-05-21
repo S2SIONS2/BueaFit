@@ -221,9 +221,23 @@ export default function Page() {
     const [step, setStep] = useState(1); // step 1: 고객 작성 및 고객 등록, step 2: 예약 등록
     // step 1: 고객 작성 및 고객 등록
     const handleStep1 = () => (
-        <section className="space-y-6 rounded-2xl mb-8 flex flex-col justify-between"             
+        <section className="space-y-6 rounded-2xl flex flex-col justify-between grow"             
         >
             <div className="space-y-1 relative">
+                <div className="mb-6">
+                    <p className="text-sm text-gray-500 mb-2">
+                        * 고객이 등록되어 있지 않다면, 아래 버튼을 클릭하여 신규 고객을 등록해주세요.
+                    </p>
+                    <button 
+                        type="button"
+                        className="cursor-pointer text-base text-violet-500 hover:text-violet-600"
+                        onClick={() => openModal(<AddCustomerModal onClose={handleModalclose} onAddCustomer={handleAddCustomer}/>)}
+                    >
+                        + 신규 고객 등록하기
+                    </button>
+
+                </div>
+
                 <label className="block text-sm font-medium text-gray-700">
                     고객 이름<span className="text-red-600 ml-1">*</span>
                 </label>
@@ -289,19 +303,6 @@ export default function Page() {
                         </ul>
                     )
                 }
-                <div className="mt-3">
-                    <p className="text-sm text-gray-500 mb-2">
-                        * 고객이 등록되어 있지 않다면, 아래 버튼을 클릭하여 신규 고객을 등록해주세요.
-                    </p>
-                    <button 
-                        type="button"
-                        className="cursor-pointer text-base text-violet-500 hover:text-violet-600"
-                        onClick={() => openModal(<AddCustomerModal onClose={handleModalclose} onAddCustomer={handleAddCustomer}/>)}
-                    >
-                        + 신규 고객 등록하기
-                    </button>
-
-                </div>
             </div>
 
             <div>
@@ -334,143 +335,145 @@ export default function Page() {
     )
     // step 2: 예약 등록
     const handleStep2 = () => (
-        <section className="space-y-6 rounded-2xl mb-8">
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                    예약 날짜<span className="text-red-600 ml-1">*</span>
-                </label>
-                <input
-                    type="date"
-                    required
-                    placeholder="오늘 날짜"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                    value={reserveDate}
-                    onChange={(e) => setReserveDate(e.target.value)}                    
-                    ref={reserveDateRef}   
-                />
-            </div>
-
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                    예약 시간<span className="text-red-600 ml-1">*</span>
-                </label>
-                <CustomSelect
-                    value={reserveTime}
-                    onChange={setReserveTime}
-                    options={timeOptions}
-                    placeholder="예약 시간을 선택하세요"
-                    ref={reserveTimeRef}
-                />
-            </div>
-
-            <div className="space-y-1 relative">
-                <label className="block text-sm font-medium text-gray-700">
-                    시술 이름<span className="text-red-600 ml-1">*</span>
-                </label>
-                <input
-                    type="text"
-                    required
-                    placeholder="예: 콤보 눈썹"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                    value={treatmentName}
-                    onChange={(e) => setTreatmentName(e.target.value)}
-                    onFocus={() => setShowTreatmentList(true)}
-                    ref={treatmentNameRef}   
-                />
-                {   // 시술 리스트
-                    showTreatmentList && (
-                        <ul className="absolute z-10 bg-white w-full border-l border-r border-gray-400 max-h-40 overflow-y-auto p-0" onMouseDown={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-end p-2">
-                                <button type="button"
-                                    className="text-gray-500 hover:text-gray-700 cursor-pointer"
-                                    onClick={() => {
-                                        setShowTreatmentList(false);
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faX} />
-                                </button>
-                            </div>
-                            {
-                                treatmentList.map((treatment, index) => (
-                                    <li
-                                        key={index}
-                                        className="border-b border-gray-200"                                        
-                                    >   
-                                        {
-                                            treatment.details.map((detail: any, index: number) => (
-                                                <div key={index} 
-                                                    className="flex items-center justify-between mb-1 hover:bg-violet-50 cursor-pointer transition-colors p-3 "
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        setTreatmentName(detail.name);
-                                                        setTreatmentPrice(detail.base_price);
-                                                        setTreatmentTime(detail.duration_min);
-                                                        setTreatmentId(detail.id);
-                                                        setShowTreatmentList(false);
-                                                    }}
-                                                >
-                                                    <span className="text-sm font-medium text-gray-800">
-                                                        {detail.name}
-                                                    </span>
-                                                    <span className="text-sm text-gray-500">
-                                                        {detail.base_price} 원
-                                                    </span>
-                                                </div>                                                
-                                            ))
-                                        }
-                                    </li>
-
-                                ))
-                            }
-                        </ul>
-                    )
-                }
-            </div>
-
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                    시술 소요 시간<span className="text-red-600 ml-1">*</span>
-                </label>
-                <div className="flex gap-2">
-                    <CustomSelect
-                        value={treatmentTime.toString()}
-                        onChange={(val) => setTreatmentTime(Number(val))}
-                        options={treatmentTimeOptions}
-                        placeholder="예약 시간을 선택하세요"
-                        ref={treatmentTimeRef}
-                    />               
+        <section className="space-y-4 rounded-2xl grow flex flex-col justify-between">
+            <div className="space-y-3">
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                        예약 날짜<span className="text-red-600 ml-1">*</span>
+                    </label>
+                    <input
+                        type="date"
+                        required
+                        placeholder="오늘 날짜"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
+                        value={reserveDate}
+                        onChange={(e) => setReserveDate(e.target.value)}                    
+                        ref={reserveDateRef}   
+                    />
                 </div>
-            </div>
 
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                    시술 가격<span className="text-red-600 ml-1">*</span>
-                </label>
-                <input
-                    type="number"
-                    min={0}
-                    required
-                    placeholder="시술 가격을 입력해주세요."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                    value={treatmentPrice}
-                    onChange={(e) => setTreatmentPrice(Number(e.target.value))}                    
-                    ref={treatmentPriceRef}
-                />
-            </div>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                        예약 시간<span className="text-red-600 ml-1">*</span>
+                    </label>
+                    <CustomSelect
+                        value={reserveTime}
+                        onChange={setReserveTime}
+                        options={timeOptions}
+                        placeholder="예약 시간을 선택하세요"
+                        ref={reserveTimeRef}
+                    />
+                </div>
 
-            <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                    메모
-                </label>
-                <input
-                    type="text"
-                    min={0}
-                    required
-                    placeholder="메모를 적어주세요."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                    value={memo}
-                    onChange={(e) => setMemo(e.target.value)}                                             
-                />
+                <div className="space-y-1 relative">
+                    <label className="block text-sm font-medium text-gray-700">
+                        시술 이름<span className="text-red-600 ml-1">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        required
+                        placeholder="예: 콤보 눈썹"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
+                        value={treatmentName}
+                        onChange={(e) => setTreatmentName(e.target.value)}
+                        onFocus={() => setShowTreatmentList(true)}
+                        ref={treatmentNameRef}   
+                    />
+                    {   // 시술 리스트
+                        showTreatmentList && (
+                            <ul className="absolute z-10 bg-white w-full border-l border-r border-gray-400 max-h-40 overflow-y-auto p-0" onMouseDown={(e) => e.stopPropagation()}>
+                                <div className="flex items-center justify-end p-2">
+                                    <button type="button"
+                                        className="text-gray-500 hover:text-gray-700 cursor-pointer"
+                                        onClick={() => {
+                                            setShowTreatmentList(false);
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faX} />
+                                    </button>
+                                </div>
+                                {
+                                    treatmentList.map((treatment, index) => (
+                                        <li
+                                            key={index}
+                                            className="border-b border-gray-200"                                        
+                                        >   
+                                            {
+                                                treatment.details.map((detail: any, index: number) => (
+                                                    <div key={index} 
+                                                        className="flex items-center justify-between mb-1 hover:bg-violet-50 cursor-pointer transition-colors p-3 "
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            setTreatmentName(detail.name);
+                                                            setTreatmentPrice(detail.base_price);
+                                                            setTreatmentTime(detail.duration_min);
+                                                            setTreatmentId(detail.id);
+                                                            setShowTreatmentList(false);
+                                                        }}
+                                                    >
+                                                        <span className="text-sm font-medium text-gray-800">
+                                                            {detail.name}
+                                                        </span>
+                                                        <span className="text-sm text-gray-500">
+                                                            {detail.base_price} 원
+                                                        </span>
+                                                    </div>                                                
+                                                ))
+                                            }
+                                        </li>
+
+                                    ))
+                                }
+                            </ul>
+                        )
+                    }
+                </div>
+
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                        시술 소요 시간<span className="text-red-600 ml-1">*</span>
+                    </label>
+                    <div className="flex gap-2">
+                        <CustomSelect
+                            value={treatmentTime.toString()}
+                            onChange={(val) => setTreatmentTime(Number(val))}
+                            options={treatmentTimeOptions}
+                            placeholder="예약 시간을 선택하세요"
+                            ref={treatmentTimeRef}
+                        />               
+                    </div>
+                </div>
+
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                        시술 가격<span className="text-red-600 ml-1">*</span>
+                    </label>
+                    <input
+                        type="number"
+                        min={0}
+                        required
+                        placeholder="시술 가격을 입력해주세요."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
+                        value={treatmentPrice}
+                        onChange={(e) => setTreatmentPrice(Number(e.target.value))}                    
+                        ref={treatmentPriceRef}
+                    />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                        메모
+                    </label>
+                    <input
+                        type="text"
+                        min={0}
+                        required
+                        placeholder="메모를 적어주세요."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
+                        value={memo}
+                        onChange={(e) => setMemo(e.target.value)}                                             
+                    />
+                </div>
             </div>
             
             <div>
@@ -496,7 +499,7 @@ export default function Page() {
 
     return (
         <div className="min-h-screen h-full py-6 px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto h-full bg-white rounded-2xl">
+            <div className="mx-auto h-full bg-white rounded-2xl flex flex-col">
                 <h1 className="text-xl font-bold text-gray-900 mb-2">
                     예약 등록 
                 </h1>
