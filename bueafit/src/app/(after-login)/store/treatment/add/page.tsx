@@ -77,102 +77,126 @@ export default function Page() {
     }, [debouncedGroup]);
 
     // 1. 신규 시술 메뉴 등록
-    const newMenu = async () => {
-        try {            
-            // input required 충족 안될 때
-            // menu 없을 때
-            if(menu === "") {
-                menuRef.current?.focus()
-                return;
-            }            
-            const response = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatment-menus`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({
-                    "name" : menu,
-                })            
-            })
+    // const newMenu = async () => {
+    //     try {            
+    //         // input required 충족 안될 때
+    //         // menu 없을 때
+    //         if(menu === "") {
+    //             menuRef.current?.focus()
+    //             return;
+    //         }            
+    //         const response = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatment-menus`, {
+    //             method: "POST",
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 Authorization: `Bearer ${accessToken}`,
+    //             },
+    //             body: JSON.stringify({
+    //                 "name" : menu,
+    //             })            
+    //         })
             
-            if(response.status === 201) {
-                const res = await response.json();
-                setMenuId(res.id);
-                return;
-            }
+    //         if(response.status === 201) {
+    //             const res = await response.json();
+    //             setMenuId(res.id);
+    //             return;
+    //         }
 
-            if(response.status === 422) {
-                const errorMsg = response.json();
-                errorMsg.then((res) => alert(res.detail[0].message));
-            }
-            if(response.status === 409) {
-                const errorMsg = response.json();
-                errorMsg.then((res) => alert(res.detail[0].message));
-            }
-        }catch(e){
-            console.error(e)
-            alert('고객 추가 등록 중 오류가 발생했습니다. 다시 등록해주세요.')
-        }
-    }
+    //         if(response.status === 422) {
+    //             const errorMsg = response.json();
+    //             errorMsg.then((res) => alert(res.detail[0].message));
+    //         }
+    //         if(response.status === 409) {
+    //             const errorMsg = response.json();
+    //             errorMsg.then((res) => alert(res.detail[0].message));
+    //         }
+    //     }catch(e){
+    //         console.error(e)
+    //         alert('고객 추가 등록 중 오류가 발생했습니다. 다시 등록해주세요.')
+    //     }
+    // }
 
     // 2. 시술 메뉴 등록 후 시술 종류 등록
     const newTreatment = async () => {
-        // 먼저 시술 메뉴 등록
-        if(menuId === null) {
-            // 메뉴 선택 안하고 글로 썼을 때
-            console.log(menuId);
-            if(menu !== "") {
-                menuList.filter((item) => {
-                    if(item.name === menu) {
-                        setMenuId(item.id);
-                    }
-                })
-            }else {
-                newMenu();            
+    try {
+        if (menu === "") {
+            menuRef.current?.focus();
+            return;
+        }
+
+        // menuId가 없다면 → 기존 목록에서 찾거나 새로 등록
+        let resolvedMenuId = menuId;
+
+        if (!resolvedMenuId) {
+            const existing = menuList.find((item) => item.name === menu);
+
+            if (existing) {
+                resolvedMenuId = existing.id;
+            } else {
+                const response = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatment-menus`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify({ name: menu }),
+                });
+
+                if (response.status === 201) {
+                    const res = await response.json();
+                    resolvedMenuId = res.id;
+                } else if (response.status === 409 || response.status === 422) {
+                    const errorMsg = await response.json();
+                    alert(errorMsg.detail[0]?.message || "시술 메뉴 등록 오류");
+                    return;
+                } else {
+                    alert("시술 메뉴 생성 중 오류가 발생했습니다.");
+                    return;
+                }
             }
         }
-        
-        // 등록 된 시술 메뉴 하위로 시술 종류 등록
-        try {
-            // name 없을 때
-            if(name === ""){            
-                nameRef.current?.focus()
-                return;
-            }
-            // 등록 된 시간 없을 때
-            if(time === null || time === 0) {
-                timeRef.current?.focus()
-                return;
-            }
-            // 등록 된 가격이 없을 때
-            if(price === "") {
-                priceRef.current?.focus()
-                return;
-            }
 
-            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatment-menus/${menuId}/details`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({                    
-                    "name": name,
-                    "duration_min": time,
-                    "base_price": price
-                })
-            })
-
-            if(res.status === 201) {
-                route.push('/store/treatment')
-                return;
-            }
-        }catch(e) {
-            console.error(e)
-            alert('시술 등록 중 오류가 발생했습니다. 다시 등록해주세요.')
+        // 필수값 유효성 체크
+        if (name === "") {
+            nameRef.current?.focus();
+            return;
         }
+        if (time === 0) {
+            timeRef.current?.focus();
+            return;
+        }
+        if (price === "") {
+            priceRef.current?.focus();
+            return;
+        }
+
+        // 시술 종류 등록
+        const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatment-menus/${resolvedMenuId}/details`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                name,
+                duration_min: time,
+                base_price: price,
+            }),
+        });
+
+        if (res.status === 201) {
+            route.push("/store/treatment");
+        } else {
+            const err = await res.json();
+            alert(err.detail?.[0]?.message || "시술 등록 실패");
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert("시술 등록 중 오류가 발생했습니다.");
     }
+};
+
 
     return (
         <div className="min-h-screen h-full py-6 px-4 sm:px-6 lg:px-8">
