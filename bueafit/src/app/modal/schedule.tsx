@@ -4,6 +4,8 @@ import { EventApi } from "@fullcalendar/core";
 import { useEffect, useState } from "react";
 import { fetchInterceptors } from "../utils/fetchInterceptors";
 // import Button from "../components/Button";
+// import { useRouter } from "next/navigation";
+// import { useModalStore } from "@/store/useModalStore";
 
 interface EventComponentProps {
   event: EventApi;
@@ -16,7 +18,10 @@ export default function Schedule({event}: EventComponentProps) {
         hour12: false,
     })
 
-    // const openState = useModalStore((state) => state.isOpen);
+    // const route = useRouter();
+
+    // 모달 닫기
+    // const { closeModal } = useModalStore();
 
     // 스케줄 정보
     const [treatmentList, setTreatmentList] = useState<any[]>([]); // 시술 정보 리스트
@@ -38,7 +43,6 @@ export default function Schedule({event}: EventComponentProps) {
             },
         }
         );
-
         const data = await res.json();
 
         if (res.status === 200) {
@@ -82,36 +86,39 @@ export default function Schedule({event}: EventComponentProps) {
                 </p>
 
                 {treatmentList.length > 0 ? (
-                <ul className="mt-3 space-y-1">
-                    {treatmentList.map((item) => (
-                    <li
-                        key={item.id}
-                        className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 border border-gray-200"
-                    >
-                        시술 항목: <span className="font-medium">{item.name}</span>
-                    </li>
-                    ))}
-                </ul>
-                ) : (
-                    <p className="text-sm text-gray-400 mt-2">시술 정보가 없습니다.</p>
+                    <ul className="mt-3 space-y-1">
+                        {treatmentList.map((item) => (
+                        <li
+                            key={item.id}
+                            className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 border border-gray-200"
+                        >
+                            시술 항목: <span className="font-medium">{item.name}</span>
+                        </li>
+                        ))}
+                    </ul>
+                    ) : (
+                        <p className="text-sm text-gray-400 mt-2">시술 정보가 없습니다.</p>
                 )}
             </div>
-            {/* <div className="flex items-center justify-end gap-2 mt-8">
-                <Button 
+            <div className="flex items-center justify-end gap-2 mt-8">
+                {/* <Button 
                     type="button"
-                    onClick={() => modifyList()}
+                    onClick={() => {
+                        route.push(`detail/${encodeURIComponent(event.id)}`)
+                        closeModal();
+                    }}
                     className="rounded h-[35px] flex items-center"
                 >
                     수정
-                </Button>
-                <button 
+                </Button> */}
+                {/* <button 
                     type="button"
                     onClick={() => deleteList()}
                     className="rounded h-[35px] flex items-center bg-gray-700 py-2 px-4 text-white"
                 >
                     삭제
-                </button>
-            </div> */}
+                </button> */}
+            </div>
         </div>
     )
 }

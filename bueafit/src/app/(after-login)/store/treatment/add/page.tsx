@@ -35,9 +35,9 @@ export default function Page() {
 
     const minuteOption = [
         { value: 0, label: "0분" },
-        { value: 15, label: "15분" },
+        // { value: 15, label: "15분" },
         { value: 30, label: "30분" },
-        { value: 45, label: "45분" },
+        // { value: 45, label: "45분" },
     ];
 
     const nameRef = useRef<HTMLInputElement>(null);

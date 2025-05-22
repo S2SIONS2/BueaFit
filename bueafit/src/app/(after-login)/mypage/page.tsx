@@ -84,10 +84,6 @@ export default function Page() {
         }
     }
 
-    const modifyShop = () => {
-        return;
-    }
-
     useEffect(() => {
         fetchUser();
         fetchShop();
@@ -176,10 +172,10 @@ export default function Page() {
                     </button>
                     <Button
                         type="button"
-                        onClick={modifyShop}
+                        onClick={() => route.push('/store/main')}
                         className="w-1/2 h-10 bg-violet-500 hover:bg-violet-600 text-white rounded-md text-sm"
                     >
-                        수정
+                        메인으로
                     </Button>
                 </section>
             </div>

@@ -368,6 +368,7 @@ export default function Page() {
                 <div className="space-y-1 relative">
                     <label className="block text-sm font-medium text-gray-700">
                         시술 이름<span className="text-red-600 ml-1">*</span>
+                        <p className="font-gray-500 font-xm text-red-400">시술을 선택해주세요.</p>
                     </label>
                     <input
                         type="text"
