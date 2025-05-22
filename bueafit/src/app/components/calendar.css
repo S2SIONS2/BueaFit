@@ -1,0 +1,38 @@
+.fc-media-screen {
+    height: 100%;
+}
+/* 상단 버튼 */
+.fc .fc-button-primary{
+    background-color: #c4b4ff;
+    border: none;
+}
+.fc .fc-button-primary:hover{
+    background-color: #a684ff;
+}
+.fc .fc-button-primary:focus,
+.fc .fc-today-button:focus {
+    border: none;
+    outline: none;
+    box-shadow: none !important;
+}
+.fc .fc-today-button {
+    background-color: #c4b4ff !important;
+    cursor: pointer;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active{
+    background-color: #a684ff !important;
+}
+
+/* 달력 이벤트 색 표시 */
+.fc-v-event{
+    background-color: #a684ff;
+    border: none;
+}
+
+/* 달력 오늘 표시 */
+.fc .fc-daygrid-day.fc-day-today{
+    background-color: #efeaff;
+}
+.fc .fc-timegrid-col.fc-day-today{
+    background-color: #efeaff;
+}
