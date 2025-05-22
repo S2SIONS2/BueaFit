@@ -43,7 +43,7 @@ export default function RootLayout({
     return (
       <div className="flex w-screen h-screen overflow-hidden">
         <MainNav />
-        <main className="w-[calc(100%-350px)] overflow-auto">
+        <main className="w-[calc(100%-350px)] h-screen overflow-auto">
           {children}
         </main>
       </div>
