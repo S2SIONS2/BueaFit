@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Modal from "@/app/components/modal";
 import "./globals.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-full` }
       >
         {children}
+        <Modal />
       </body>
     </html>
   );

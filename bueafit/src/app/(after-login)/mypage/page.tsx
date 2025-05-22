@@ -2,7 +2,10 @@
 
 import Button from "@/app/components/Button";
 import LogOutNav from "@/app/components/LogoutNav";
+import ModifyShop from "@/app/modal/modifyShop";
+import ModifyUser from "@/app/modal/modifyUser";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
+import { useModalStore } from "@/store/useModalStore";
 import { faCircleLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
@@ -33,6 +36,14 @@ export default function Page() {
         ADMIN: " 개발관리자",
         MASTER: " 사장님",
         ADMANAGERMIN: " 직원님",
+    };
+
+    // 수정 모달
+    const openModal = useModalStore((state) => state.openModal);
+    // 모달 닫힘 체크
+    const [checkClose, setCheckClose] = useState(false);
+    const handleModalclose = () => {
+        setCheckClose(!checkClose);
     };
 
     // 유저 정보 불러오기
@@ -80,7 +91,7 @@ export default function Page() {
     useEffect(() => {
         fetchUser();
         fetchShop();
-    }, [])
+    }, [checkClose])
 
     return(
         <div>
@@ -107,6 +118,7 @@ export default function Page() {
                         <button
                             type="button"
                             className="mt-2 text-sm text-violet-600 hover:underline cursor-pointer"
+                            onClick={() => userInfo && openModal(<ModifyUser onClose={handleModalclose} user={userInfo} />)}
                         >
                             수정
                         </button>
@@ -134,6 +146,7 @@ export default function Page() {
                                     <button
                                         type="button"
                                         className="text-sm text-violet-600 hover:underline cursor-pointer"
+                                        onClick={() => userInfo && openModal(<ModifyShop onClose={handleModalclose} shopList={shop} />)}
                                     >
                                         수정
                                     </button>
