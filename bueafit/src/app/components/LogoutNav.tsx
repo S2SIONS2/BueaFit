@@ -24,7 +24,7 @@ export default function LogOutNav() {
     }
 
     return (
-        <nav className="w-full h-[50px] flex items-center pl-2 pr-2 bg-white">
+        <nav className="w-full h-[50px] flex items-center pl-2 pr-2 bg-white shadow-sm">
             <div className="w-full flex justify-between space-x-2 text-[18px]">
                 <Link href={'/selectstore'} className="font-bold">BueaFit</Link>
                 <button
