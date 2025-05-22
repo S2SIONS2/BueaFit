@@ -6,6 +6,7 @@ import { fetchInterceptors } from '@/app/utils/fetchInterceptors';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import ModifyCustomerModal from '@/app/modal/modifyCustomer';
 import { useModalStore } from '@/store/useModalStore';
+import CustomerSchedule from '@/app/components/customer-schedule';
 
 interface CustomerInfo {
   id: number;
@@ -97,17 +98,7 @@ export default function CustomerDetailPage() {
         </div>
       </section>
 
-      {/* 예약 일정 */}
-      <section className="bg-white rounded-2xl shadow-md p-6 mb-8">
-        <h2 className="text-xl font-semibold border-b pb-2 mb-4">예약 일정</h2>
-        <div className="text-gray-500">예약 날짜, 시술 명, 시술 차수, 메모 등 표시 예정</div>
-      </section>
-
-      {/* 완료 시술 내역 */}
-      <section className="bg-white rounded-2xl shadow-md p-6">
-        <h2 className="text-xl font-semibold border-b pb-2 mb-4">완료 시술 내역</h2>
-        <div className="text-gray-500">시술 날짜, 시술 명, 시술 차수, 메모 등 표시 예정</div>
-      </section>
+      <CustomerSchedule customerId={customer.id}/>
     </div>
   );
 }

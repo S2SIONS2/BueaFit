@@ -17,6 +17,7 @@
     "@fullcalendar/interaction": "^6.1.17",
     "@fullcalendar/react": "^6.1.17",
     "@fullcalendar/timegrid": "^6.1.17",
+    "dayjs": "^1.11.13",
     "next": "15.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
