@@ -33,7 +33,6 @@ export default function CalendarComponent() {
 
       if (res.status === 200) {
         setScheduleList(data.items);
-        
       }
     } catch (e) {
       console.error(e);
@@ -60,7 +59,8 @@ export default function CalendarComponent() {
             group: phonebook?.group_name,
             memo: phonebook?.memo,
             status: item.status,
-            treatment_item_id: item.treatment_items?.[0].id,
+            treatment_menu_id: item.treatment_items?.[0].menu_detail.menu_id,
+            treatment_item_id: item.treatment_items?.[0].menu_detail.id,
             duration: item.treatment_items?.[0]?.duration_min,
             price: item.treatment_items?.[0]?.base_price,
         },
