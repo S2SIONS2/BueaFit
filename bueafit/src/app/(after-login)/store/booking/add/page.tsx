@@ -35,7 +35,7 @@ export default function Page() {
     const [customerList, setCustomerList] = useState<any[]>([]); // 고객 리스트
     const [showCustomerList, setShowCustomerList] = useState(false); // 고객 리스트 노출 여부
 
-    const [status, setStatus] = useState('status')
+    const [status, setStatus] = useState('RESERVED')
     const statusOptions = [
         { value: "RESERVED", label: "예약"},
         { value: "VISITED", label: "시술 완료"},
@@ -115,7 +115,7 @@ export default function Page() {
     const [memo, setMemo] = useState(''); // 메모
 
     const nameRef = useRef<HTMLInputElement>(null); // 고객 이름 input ref
-    const statusRef = useRef<HTMLUListElement>(null); // 예약 단계 select ref
+    // const statusRef = useRef<HTMLUListElement>(null); // 예약 단계 select ref
     const treatmentNameRef = useRef<HTMLInputElement>(null); // 시술 이름 input ref
     const reserveDateRef = useRef<HTMLInputElement>(null); // 예약 날짜 input ref
     const reserveTimeRef = useRef<HTMLUListElement>(null); // 예약 시간 select ref
@@ -190,13 +190,13 @@ export default function Page() {
         }
 
 
+        console.log(status)
 
         try {
             // 완료 시간 계산
-            const finished_at = new Date(
-                new Date(`${reserveDate}T${reserveTime}`).getTime() + treatmentTime * 60000
-                ).toISOString().slice(0, 19);
-                
+            // const finished_at = new Date(
+            //     new Date(`${reserveDate}T${reserveTime}`).getTime() + treatmentTime * 60000
+            //     ).toISOString().slice(0, 19);
             // 시술 예약 
             const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatments`, {
                 method: 'POST',
@@ -208,7 +208,7 @@ export default function Page() {
                     phonebook_id: customerId,                    
                     reserved_at: reserveDate + 'T' + reserveTime,
                     status: status,
-                    finished_at: finished_at,
+                    // finished_at: finished_at,
                     memo: memo,
                     treatment_items: [
                         {   
@@ -327,7 +327,7 @@ export default function Page() {
                     onChange={setStatus}
                     options={statusOptions}
                     placeholder="예약"
-                    ref={statusRef}
+                    // ref={statusRef}
                 />
             </div>
 

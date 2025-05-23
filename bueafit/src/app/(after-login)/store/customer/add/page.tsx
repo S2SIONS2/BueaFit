@@ -83,6 +83,10 @@ export default function Page() {
                 return;
             }
 
+            if(response.status === 409 ) {
+                alert('등록 된 전화번호 입니다.')
+            }
+
             if(response.status === 422) {
                 const errorMsg = response.json();
                 errorMsg.then((res) => alert(res.detail[0].msg));
@@ -125,6 +129,7 @@ export default function Page() {
                                 전화번호
                                 <span className="text-red-900"> *</span>
                             </label>
+                            <p className="text-sm text-gray-600 mb-1">-를 제외한 숫자만 적어주세요.</p>
                             <input
                                 type="number"
                                 inputMode="numeric"
