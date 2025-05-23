@@ -62,6 +62,14 @@ export default function Schedule({event}: EventComponentProps) {
     }
     }, []);
 
+    // status 표시
+    const STATUS_LABELS: Record<string, string> = {
+        RESERVED: " 예약 중",
+        VISITED: " 시술 완료",
+        CANCELED: " 취소됨",
+        NO_SHOW: " 미방문",      
+    };
+
     // 수정하기
     // const modifyList = () => {
 
@@ -83,6 +91,12 @@ export default function Schedule({event}: EventComponentProps) {
 
                 <p className="text-sm text-gray-600">
                 예약 시간: <span className="font-medium text-gray-800">{time}</span>
+                </p>
+
+                <p className="text-sm text-gray-600">
+                예약 여부: <span className="font-medium text-gray-800">
+                    {STATUS_LABELS[event.extendedProps.status] || "알 수 없음"}
+                </span>
                 </p>
 
                 {treatmentList.length > 0 ? (

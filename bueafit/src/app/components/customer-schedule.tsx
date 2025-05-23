@@ -46,7 +46,7 @@ export default function CustomerSchedule({customerId}: customerProps) {
     // 예약 상태 표시
     const STATUS_LABELS: Record<string, string> = {
         RESERVED: " 예약 중",
-        COMPLETED: " 시술 완료",
+        VISITED: " 시술 완료",
         CANCELED: " 취소됨",
         NO_SHOW: " 미방문",      
     };
