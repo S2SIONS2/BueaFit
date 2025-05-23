@@ -35,6 +35,14 @@ export default function Page() {
     const [customerList, setCustomerList] = useState<any[]>([]); // 고객 리스트
     const [showCustomerList, setShowCustomerList] = useState(false); // 고객 리스트 노출 여부
 
+    const [status, setStatus] = useState('status')
+    const statusOptions = [
+        { value: "RESERVED", label: "예약"},
+        { value: "VISITED", label: "시술 완료"},
+        { value: "CANCELLED", label: "예약 취소"},
+        { value: "NO_SHOW", label: "노쇼"}
+    ]
+
     // 시술 예약 날짜 기본 값
     const today = new Date();
     const year = today.getFullYear();
@@ -107,6 +115,7 @@ export default function Page() {
     const [memo, setMemo] = useState(''); // 메모
 
     const nameRef = useRef<HTMLInputElement>(null); // 고객 이름 input ref
+    const statusRef = useRef<HTMLUListElement>(null); // 예약 단계 select ref
     const treatmentNameRef = useRef<HTMLInputElement>(null); // 시술 이름 input ref
     const reserveDateRef = useRef<HTMLInputElement>(null); // 예약 날짜 input ref
     const reserveTimeRef = useRef<HTMLUListElement>(null); // 예약 시간 select ref
@@ -175,6 +184,13 @@ export default function Page() {
 
     // 예약 등록
     const newReserve = async () => {
+        // require 값 체크
+        if(name !== ''){
+            nameRef.current?.focus()
+        }
+
+
+
         try {
             // 완료 시간 계산
             const finished_at = new Date(
@@ -191,7 +207,7 @@ export default function Page() {
                 body: JSON.stringify({
                     phonebook_id: customerId,                    
                     reserved_at: reserveDate + 'T' + reserveTime,
-                    status: 'RESERVED',
+                    status: status,
                     finished_at: finished_at,
                     memo: memo,
                     treatment_items: [
@@ -303,6 +319,16 @@ export default function Page() {
                         </ul>
                     )
                 }
+                <label className="block text-sm font-medium text-gray-700 mt-6">
+                    예약 단계<span className="text-red-600 ml-1">*</span>
+                </label>
+                <CustomSelect
+                    value={status}
+                    onChange={setStatus}
+                    options={statusOptions}
+                    placeholder="예약"
+                    ref={statusRef}
+                />
             </div>
 
             <div>
@@ -336,7 +362,7 @@ export default function Page() {
     // step 2: 예약 등록
     const handleStep2 = () => (
         <section className="space-y-4 rounded-2xl grow flex flex-col justify-between">
-            <div className="space-y-3">
+            <form className="space-y-3">
                 <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700">
                         예약 날짜<span className="text-red-600 ml-1">*</span>
@@ -399,6 +425,9 @@ export default function Page() {
                                             key={index}
                                             className="border-b border-gray-200"                                        
                                         >   
+                                        <p className="text-sm font-bold pl-2 pb-1 mt-3 border-b border-gray-200">
+                                            [ {treatment.name} ]
+                                        </p>
                                             {
                                                 treatment.details.map((detail: any, index: number) => (
                                                     <div key={index} 
@@ -475,7 +504,7 @@ export default function Page() {
                         onChange={(e) => setMemo(e.target.value)}                                             
                     />
                 </div>
-            </div>
+            </form>
             
             <div>
                 <div className="pt-5 mt-5 flex items-center space-x-3">
