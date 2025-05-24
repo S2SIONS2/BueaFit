@@ -89,9 +89,8 @@ export default function Page() {
 
     const [treatmentList, setTreatmentList] = useState<any[]>([]); // 시술 리스트
     const [showTreatmentList, setShowTreatmentList] = useState(false); // 시술 리스트 노출 여부
-    const [treatmentId, setTreatmentId] = useState<number | null>(null); // 시술 ID
     const [treatmentName, setTreatmentName] = useState(''); // 시술 이름
-    const [treatmentTime, setTreatmentTime] = useState(0); // 시술 소요 시간
+    const [sessionNo, setSessionNo] = useState(1) // 시술 차수 - default 1차 완료
     const treatmentTimeOptions = [
         { value: "30", label: "30분" },
         { value: "60", label: "1시간" },
@@ -110,7 +109,6 @@ export default function Page() {
         { value: "450", label: "7시간 30분" },
         { value: "480", label: "8시간" }
     ];
-    const [treatmentPrice, setTreatmentPrice] = useState(0); // 시술 가격
 
     const [memo, setMemo] = useState(''); // 메모
 
@@ -119,13 +117,74 @@ export default function Page() {
     const treatmentNameRef = useRef<HTMLInputElement>(null); // 시술 이름 input ref
     const reserveDateRef = useRef<HTMLInputElement>(null); // 예약 날짜 input ref
     const reserveTimeRef = useRef<HTMLUListElement>(null); // 예약 시간 select ref
-    const treatmentTimeRef = useRef<HTMLUListElement>(null); // 시술 소요 시간 select ref
-    const treatmentPriceRef = useRef<HTMLInputElement>(null); // 시술 가격 input ref
+    // const treatmentTimeRef = useRef<HTMLUListElement>(null); // 시술 소요 시간 select ref
+    // const treatmentPriceRef = useRef<HTMLInputElement>(null); // 시술 가격 input ref
+    const sessionRef = useRef<HTMLUListElement>(null); // 차수 select ref
+    const sessionOptions = [
+        { value: "1", label: "1차" },
+        { value: "2", label: "2차" },
+        { value: "3", label: "3차" },
+        { value: "4", label: "4차" },
+        { value: "5", label: "5차" },
+        { value: "6", label: "6차" },
+        { value: "7", label: "7차" },
+        { value: "8", label: "8차" },
+        { value: "9", label: "9차" },
+        { value: "10", label: "10차" },
+    ];
+
+    const [reserveList, setReserveList] = useState<
+        {
+            menu_detail_id: number;
+            name: string; // UI용
+            base_price: number;
+            duration_min: number;
+            session_no: number;
+        }[]
+    >([]);
+
+    // 예약 시술 리스트 추가
+    const addReserveList = (
+        detailId: number,
+        detailName: string,
+        basePrice: number,
+        durationMin: number,
+        session = 1
+    ) => {
+        const exists = reserveList.some(item => item.menu_detail_id === detailId);
+        if (exists) {
+            alert("이미 추가된 시술 항목입니다.");
+            return;
+        }
+
+        setReserveList(prev => [
+            ...prev,
+            {
+                menu_detail_id: detailId,
+                name: detailName,
+                base_price: basePrice,
+                duration_min: durationMin,
+                session_no: session,
+            },
+        ]);
+
+        setTreatmentName('');
+        setSessionNo(1);    
+    };
+
+    // 시술 선택 후 총 금액과 시간
+    const totalPrice = reserveList.reduce((sum, item) => sum + item.base_price, 0);
+    const totalDuration = reserveList.reduce((sum, item) => sum + item.duration_min, 0);
+    const hours = Math.floor(totalDuration / 60);
+    const minutes = totalDuration % 60;
+    const formattedDuration = `${hours}시간 ${minutes}분`;
+
 
     const route = useRouter();
 
     // modal control - 신규 고객 등록
     const openModal = useModalStore((state) => state.openModal);
+
     // 모달 닫힘 체크
     const [checkClose, setCheckClose] = useState(false);
     const handleModalclose = () => {
@@ -184,20 +243,28 @@ export default function Page() {
 
     // 예약 등록
     const newReserve = async () => {
-        // require 값 체크
-        if(name !== ''){
-            nameRef.current?.focus()
+        if (sessionNo === null) {
+            sessionRef.current?.focus();
+            return;
+        }
+        if (customerId === null) {
+            nameRef.current?.focus();
+            alert('고객을 등록해주세요.')
+            return;
+        }
+
+        if (reserveList.length === 0) {
+            alert('등록된 시술 항목이 없습니다.');
+            return;
+        }
+
+        if (!reserveTime) {
+            alert('예약 시간을 선택해주세요.');
+            return;
         }
 
 
-        console.log(status)
-
         try {
-            // 완료 시간 계산
-            // const finished_at = new Date(
-            //     new Date(`${reserveDate}T${reserveTime}`).getTime() + treatmentTime * 60000
-            //     ).toISOString().slice(0, 19);
-            // 시술 예약 
             const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatments`, {
                 method: 'POST',
                 headers: {
@@ -205,34 +272,33 @@ export default function Page() {
                     Authorization: `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({
-                    phonebook_id: customerId,                    
-                    reserved_at: reserveDate + 'T' + reserveTime,
-                    status: status,
-                    // finished_at: finished_at,
-                    memo: memo,
-                    treatment_items: [
-                        {   
-                            menu_detail_id: treatmentId,                            
-                            base_price: treatmentPrice,
-                            duration_min: treatmentTime,
-                        }
-                    ]
-                })
-            })
-            if(res.status === 201) {
+                    phonebook_id: customerId,
+                    reserved_at: `${reserveDate}T${reserveTime}`,
+                    status,
+                    memo,
+                    treatment_items: reserveList.map(({ menu_detail_id, base_price, duration_min, session_no }) => ({
+                        menu_detail_id,
+                        base_price,
+                        duration_min,
+                        session_no,
+                    }))
+                }),
+            });
+
+            if (res.status === 201) {
                 alert('예약이 등록되었습니다.');
                 route.push('/store/booking/calendar');
-            }else if(res.status === 422) {
+            } else if (res.status === 422) {
                 const errorMsg = await res.json();
                 alert(errorMsg.detail[0].msg);
-            }else {
+            } else {
                 alert('예약 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
-            }       
-        }catch(e) {
+            }
+        } catch (e) {
             console.error(e);
             alert('예약 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
         }
-    }
+    };
 
     const [step, setStep] = useState(1); // step 1: 고객 작성 및 고객 등록, step 2: 예약 등록
     // step 1: 고객 작성 및 고객 등록
@@ -257,6 +323,7 @@ export default function Page() {
                 <label className="block text-sm font-medium text-gray-700">
                     고객 이름<span className="text-red-600 ml-1">*</span>
                 </label>
+                <p className="font-gray-500 font-xm text-red-400">고객을 선택해주세요.</p>
                 <input
                     type="text"
                     required
@@ -378,7 +445,7 @@ export default function Page() {
                     />
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1 border-b border-gray-300 pb-4">
                     <label className="block text-sm font-medium text-gray-700">
                         예약 시간<span className="text-red-600 ml-1">*</span>
                     </label>
@@ -433,12 +500,9 @@ export default function Page() {
                                                     <div key={index} 
                                                         className="flex items-center justify-between mb-1 hover:bg-violet-50 cursor-pointer transition-colors p-3 "
                                                         onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            setTreatmentName(detail.name);
-                                                            setTreatmentPrice(detail.base_price);
-                                                            setTreatmentTime(detail.duration_min);
-                                                            setTreatmentId(detail.id);
+                                                            e.stopPropagation();
                                                             setShowTreatmentList(false);
+                                                            addReserveList(detail.id, detail.name, detail.base_price, detail.duration_min);
                                                         }}
                                                     >
                                                         <span className="text-sm font-medium text-gray-800">
@@ -458,55 +522,97 @@ export default function Page() {
                         )
                     }
                 </div>
+                
+                {reserveList.map((item, index) => (
+                    <div
+                        key={index}
+                        className="text-sm text-gray-700 border p-4 rounded mb-4 flex flex-col gap-2"
+                    >
+                        <div className="flex justify-between items-center">
+                            <h3 className="font-bold text-sm">
+                                {item.name}
+                            </h3> 
+                            <button
+                                type="button"
+                                onClick={() => setReserveList(reserveList.filter((_, i) => i !== index))}
+                                className="text-red-500 hover:text-red-700 cursor-pointer"
+                            >
+                                삭제
+                            </button>
+                        </div>
 
-                <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                        시술 소요 시간<span className="text-red-600 ml-1">*</span>
-                    </label>
-                    <div className="flex gap-2">
-                        <CustomSelect
-                            value={treatmentTime.toString()}
-                            onChange={(val) => setTreatmentTime(Number(val))}
-                            options={treatmentTimeOptions}
-                            placeholder="예약 시간을 선택하세요"
-                            ref={treatmentTimeRef}
-                        />               
+                        <div className="flex gap-4 flex-wrap">
+                            <div className="flex-1 min-w-[150px]">
+                                <label className="block text-xs mb-1 text-gray-600">차수</label>
+                                <CustomSelect
+                                    value={item.session_no.toString()}
+                                    onChange={(val) => {
+                                        const updated = [...reserveList];
+                                        updated[index].session_no = Number(val);
+                                        setReserveList(updated);
+                                    }}
+                                    options={sessionOptions}
+                                />
+                            </div>
+
+                            <div className="flex-1 min-w-[150px]">
+                                <label className="block text-xs mb-1 text-gray-600">소요 시간</label>
+                                <CustomSelect
+                                    value={item.duration_min.toString()}
+                                    onChange={(val) => {
+                                        const updated = [...reserveList];
+                                        updated[index].duration_min = Number(val);
+                                        setReserveList(updated);
+                                    }}
+                                    options={treatmentTimeOptions}
+                                />
+                            </div>
+
+                            <div className="flex-1 min-w-[150px]">
+                                <label className="block text-xs mb-1 text-gray-600">가격</label>
+                                <input
+                                    type="number"
+                                    className="w-full h-[38px] max-h-60 px-2 ppy-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
+                                    value={item.base_price}
+                                    onChange={(e) => {
+                                        const updated = [...reserveList];
+                                        updated[index].base_price = Number(e.target.value);
+                                        setReserveList(updated);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                <div className="flex-1 min-w-[150px] border-t border-gray-300">
+                    <label className="block font-medium text-gray-700 mt-3">총 시술 시간</label>
+                    <div>
+                        {formattedDuration}
                     </div>
                 </div>
 
-                <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                        시술 가격<span className="text-red-600 ml-1">*</span>
-                    </label>
-                    <input
-                        type="number"
-                        min={0}
-                        required
-                        placeholder="시술 가격을 입력해주세요."
+                <div className="flex-1 min-w-[150px]">
+                    <label className="block font-medium text-gray-700 mt-3">총 가격</label>
+                    <div>
+                        {totalPrice}
+                    </div>
+                </div>
+
+                <div className="flex-1 min-w-[150px] border-t border-gray-300">
+                    <label className="block font-medium text-gray-700 mt-3">메모</label>
+                    <input 
+                        type="text" 
+                        value={memo}
+                        onChange={(e) => setMemo(e.target.value)}
+                        placeholder="메모를 입력해주세요."
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                        value={treatmentPrice}
-                        onChange={(e) => setTreatmentPrice(Number(e.target.value))}                    
-                        ref={treatmentPriceRef}
                     />
                 </div>
 
-                <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700">
-                        메모
-                    </label>
-                    <input
-                        type="text"
-                        min={0}
-                        required
-                        placeholder="메모를 적어주세요."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:outline-none"
-                        value={memo}
-                        onChange={(e) => setMemo(e.target.value)}                                             
-                    />
-                </div>
             </form>
             
-            <div>
+            <div className="mb-6">
                 <div className="pt-5 mt-5 flex items-center space-x-3">
                     <button 
                         type="button"

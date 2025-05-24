@@ -45,10 +45,10 @@ export default function CustomerSchedule({customerId}: customerProps) {
 
     // 예약 상태 표시
     const STATUS_LABELS: Record<string, string> = {
-        RESERVED: " 예약 중",
+        RESERVED: " 예약 완료",
         VISITED: " 시술 완료",
         CANCELED: " 취소됨",
-        NO_SHOW: " 미방문",      
+        NO_SHOW: " 노쇼",      
     };
 
     const reservedSchedules = scheduleList.filter((item) => item.status === "RESERVED");
@@ -109,7 +109,7 @@ export default function CustomerSchedule({customerId}: customerProps) {
 
             {/* 완료 시술 내역 */}
             <section className="bg-white rounded-2xl shadow-md p-6">
-                <h2 className="text-xl font-semibold border-b pb-2 mb-4">완료 시술 내역</h2>
+                <h2 className="text-xl font-semibold border-b pb-2 mb-4">이전 시술 내역</h2>
 
                 {completedSchedules.length === 0 ? (
                     <p className="text-gray-400 text-sm">완료된 일정이 없습니다.</p>

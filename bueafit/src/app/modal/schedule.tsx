@@ -59,15 +59,16 @@ export default function Schedule({event}: EventComponentProps) {
     useEffect(() => {
     if (treatmentMenuId && treatmentItemId) {
         fetchTreatment();
+        console.log(event.extendedProps.treatment_menu_id)
     }
-    }, []);
+    }, [treatmentItemId]);
 
     // status 표시
     const STATUS_LABELS: Record<string, string> = {
-        RESERVED: " 예약 중",
+        RESERVED: " 예약 완료",
         VISITED: " 시술 완료",
         CANCELED: " 취소됨",
-        NO_SHOW: " 미방문",      
+        NO_SHOW: " 노쇼",      
     };
 
     // 수정하기
@@ -86,18 +87,20 @@ export default function Schedule({event}: EventComponentProps) {
 
             <div className="space-y-2">
                 <h2 className="text-lg font-semibold text-gray-700">
-                예약자: <span className="text-blue-600">{event.title}</span>
+                    예약자: <span className="text-blue-600">{event.title}</span>
                 </h2>
 
                 <p className="text-sm text-gray-600">
-                예약 시간: <span className="font-medium text-gray-800">{time}</span>
+                    예약 시간: <span className="font-medium text-gray-800">{time}</span>
                 </p>
 
                 <p className="text-sm text-gray-600">
-                예약 여부: <span className="font-medium text-gray-800">
+                    예약 여부: <span className="font-medium text-gray-800">
                     {STATUS_LABELS[event.extendedProps.status] || "알 수 없음"}
                 </span>
                 </p>
+
+                {event.extendedProps.treatment_item_name}
 
                 {treatmentList.length > 0 ? (
                     <ul className="mt-3 space-y-1">

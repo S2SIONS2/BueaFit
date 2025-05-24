@@ -36,3 +36,7 @@
 .fc .fc-timegrid-col.fc-day-today{
     background-color: #efeaff;
 }
+
+.fc td, .fc th {
+    overflow: hidden !important;
+}

@@ -16,7 +16,11 @@ interface EventInput {
   extendedProps?: Record<string, any>;
 }
 
-export default function CalendarComponent() {
+interface CalendarProps {
+  view? : string
+}
+
+export default function CalendarComponent({view}: CalendarProps) {
   const [scheduleList, setScheduleList] = useState<any[]>([]); // 예약 리스트
   
   // 예약 조회
@@ -61,6 +65,7 @@ export default function CalendarComponent() {
             status: item.status,
             treatment_menu_id: item.treatment_items?.[0].menu_detail.menu_id,
             treatment_item_id: item.treatment_items?.[0].menu_detail.id,
+            treatment_item_name: item.treatment_items?.[0].menu_detail.name,
             duration: item.treatment_items?.[0]?.duration_min,
             price: item.treatment_items?.[0]?.base_price,
         },

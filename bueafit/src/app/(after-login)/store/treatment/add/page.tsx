@@ -67,7 +67,6 @@ export default function Page() {
         const items = data.items
         const mappingData = items.map((item: any) => ({name: item.name, id: item.id}))
         setMenuList(mappingData);
-        console.log(mappingData);
     }
 
     useEffect(() => {
