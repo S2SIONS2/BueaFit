@@ -585,21 +585,21 @@ export default function Page() {
                     </div>
                 ))}
 
-                <div className="flex-1 min-w-[150px] border-t border-gray-300">
-                    <label className="block font-medium text-gray-700 mt-3">총 시술 시간</label>
-                    <div>
-                        {formattedDuration}
+                <div className="flex justify-center gap-4 mt-6">
+                    {/* 총 시술 시간 */}
+                    <div className="flex-1 bg-white rounded-2xl shadow-md p-4 text-center">
+                        <p className="text-sm text-gray-500 mb-1">총 시술 시간</p>
+                        <p className="text-lg font-semibold text-gray-800">{formattedDuration}</p>
+                    </div>
+
+                    {/* 총 가격 */}
+                    <div className="flex-1 bg-white rounded-2xl shadow-md p-4 text-center">
+                        <p className="text-sm text-gray-500 mb-1">총 가격</p>
+                        <p className="text-lg font-semibold text-gray-800">{totalPrice.toLocaleString()} 원</p>
                     </div>
                 </div>
 
-                <div className="flex-1 min-w-[150px]">
-                    <label className="block font-medium text-gray-700 mt-3">총 가격</label>
-                    <div>
-                        {totalPrice}
-                    </div>
-                </div>
-
-                <div className="flex-1 min-w-[150px] border-t border-gray-300">
+                <div className="">
                     <label className="block font-medium text-gray-700 mt-3">메모</label>
                     <input 
                         type="text" 
