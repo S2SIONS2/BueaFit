@@ -1,61 +1,82 @@
-import CalendarComponent from "@/app/components/CalendarComponent";
+import { faCheckToSlot, faClipboardList } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function Page(){
-    return (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
-            {/* 우측: 통계 정보 */}
-            <div className="flex flex-col col-span-3 gap-4">
-                {/* 직원별 매출 */}
-                <div className="bg-white rounded-xl shadow p-4">
-                <h3 className="text-md font-semibold mb-2">직원별 매출</h3>
-                <div className="h-40 bg-gray-100 rounded">[BarChart]</div>
-                </div>
+export default function Page() {
+  const today = new Date().toLocaleDateString("ko-KR");
 
-                {/* 시술별 매출 */}
-                <div className="bg-white rounded-xl shadow p-4">
-                <h3 className="text-md font-semibold mb-2">시술별 매출</h3>
-                <div className="h-40 bg-gray-100 rounded">[PieChart]</div>
-                </div>
+  return (
+    <div className="w-full p-6 bg-[#f8f9fb]">
+        <header className="mb-6">
+            <h1 className="text-2xl font-bold">금일 현황</h1>
+            <p className="text-sm text-gray-500">{today}</p>
+        </header>
 
-                {/* 시술별 인원 수 */}
-                <div className="bg-white rounded-xl shadow p-4">
-                <h3 className="text-md font-semibold mb-2">시술별 총 인원</h3>
-                <div className="h-40 bg-gray-100 rounded">[BarChart]</div>
-                </div>
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div className="bg-gradient-to-r from-purple-300 to-purple-500 text-white rounded-lg p-4 shadow">
+                <h3 className="text-sm font-medium">오늘 예약 수</h3>
+                <p className="text-3xl font-bold mt-1">8건</p>
+            </div>
+            <div className="bg-gradient-to-r from-green-300 to-green-500 text-white rounded-lg p-4 shadow">
+                <h3 className="text-sm font-medium">완료된 시술</h3>
+                <p className="text-3xl font-bold mt-1">6건</p>
+            </div>
+            <div className="bg-gradient-to-r from-red-300 to-red-500 text-white rounded-lg p-4 shadow">
+                <h3 className="text-sm font-medium">노쇼 수</h3>
+                <p className="text-3xl font-bold mt-1">2건</p>
+            </div>
+        </section>
 
-                {/* 외상 금액 & 완료 수 */}
-                <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white rounded-xl shadow p-4 text-center">
-                    <h3 className="text-md font-semibold mb-2">금일 외상 금액</h3>
-                    <p className="text-2xl font-bold text-red-600">₩123,000</p>
-                </div>
-                <div className="bg-white rounded-xl shadow p-4 text-center">
-                    <h3 className="text-md font-semibold mb-2">작업 완료 수</h3>
-                    <p className="text-2xl font-bold text-green-600">15건</p>
-                </div>
-                </div>
-
-                {/* 작업 완료 내역 */}
-                <div className="bg-white rounded-xl shadow p-4">
-                <h3 className="text-md font-semibold mb-2">작업 완료 내역</h3>
-                <div className="h-32 overflow-y-auto bg-gray-50 rounded p-2">
-                    <ul className="text-sm list-disc pl-5 space-y-1">
-                    <li>홍길동 - 두피 관리</li>
-                    <li>김영희 - 스킨 케어</li>
-                    <li>박철수 - 손 마사지</li>
-                    {/* ... */}
+        <section className="gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 space-y-6 gap-4">
+                <div className="h-full bg-white rounded-xl p-4 shadow">
+                    <h3 className="text-lg font-semibold mb-3 lg:col-span-1">
+                        <FontAwesomeIcon icon={faClipboardList} className="text-violet-400 mr-2" />
+                        예약 내역
+                    </h3>
+                    <ul className="space-y-3 text-sm">
+                        <li className="border-l-4 border-blue-400 pl-3">
+                            <p className="font-semibold">10:00 이준영</p>
+                            <p className="text-gray-500">두피 관리</p>
+                        </li>
+                        <li className="border-l-4 border-green-400 pl-3">
+                            <p className="font-semibold">11:30 김영희</p>
+                            <p className="text-gray-500">스킨 케어</p>
+                        </li>
+                        <li className="border-l-4 border-pink-400 pl-3">
+                            <p className="font-semibold">13:00 박철수</p>
+                            <p className="text-gray-500">손 마사지</p>
+                        </li>
                     </ul>
                 </div>
+
+                <div className="h-full bg-white rounded-xl p-4 shadow lg:col-span-2">
+                    <h3 className="text-lg font-semibold mb-3">
+                        <FontAwesomeIcon icon={faCheckToSlot} className="text-violet-400 mr-2"/> 
+                        작업 완료 내역
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                        <li>홍길동 - 두피 관리</li>
+                        <li>김영희 - 스킨 케어</li>
+                        <li>박철수 - 손 마사지</li>
+                    </ul>
                 </div>
             </div>
-            {/* 좌측: FullCalendar Day View */}
-            <div className="bg-white rounded-xl col-span-1 shadow p-4 h-full flex flex-col">
-                <h2 className="text-xl font-semibold mb-4">오늘의 예약</h2>
-                {/* FullCalendar Day View */}
-                <div className="grow overflow-y-auto">
-                    <CalendarComponent view="day" /> 
-                </div>
+
+        </section>
+        <section className="lg:col-span-3 space-y-6">
+            <div className="bg-white rounded-xl p-4 shadow">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">직원별 매출</h3>
+                <div className="h-40 bg-gray-100 rounded flex items-center justify-center text-gray-400">[BarChart]</div>
             </div>
-        </div>
-    )
+            <div className="bg-white rounded-xl p-4 shadow">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">시술별 매출</h3>
+                <div className="h-40 bg-gray-100 rounded flex items-center justify-center text-gray-400">[PieChart]</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">시술별 인원</h3>
+                <div className="h-40 bg-gray-100 rounded flex items-center justify-center text-gray-400">[BarChart]</div>
+            </div>
+        </section>
+    </div>
+  );
 }

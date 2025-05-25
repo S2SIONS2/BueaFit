@@ -37,6 +37,13 @@
     background-color: #efeaff;
 }
 
+/* th, td */
 .fc td, .fc th {
     overflow: hidden !important;
+}
+.fc-timegrid-slot-label-frame.fc-scrollgrid-shrink-frame {
+    text-align: center;
+}
+.fc-theme-standard td {
+    border-bottom: none !important;
 }
