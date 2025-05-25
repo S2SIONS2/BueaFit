@@ -89,7 +89,7 @@ export default function MainNav() {
                         `}
                     >
                     <FontAwesomeIcon icon={faRectangleList} className="text-violet-300 mr-[10px] text-[20px] w-[20px]"/>
-                        메인
+                        오늘의 정리
                     </Link>
                     <Link 
                         href={"/store/booking/calendar"}

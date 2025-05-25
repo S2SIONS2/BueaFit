@@ -49,11 +49,11 @@ export default function Page(){
                 </div>
             </div>
             {/* 좌측: FullCalendar Day View */}
-            <div className="bg-white rounded-xl col-span-1 shadow p-4 h-full">
-                <h2 className="text-xl font-semibold mb-4">오늘 예약</h2>
+            <div className="bg-white rounded-xl col-span-1 shadow p-4 h-full flex flex-col">
+                <h2 className="text-xl font-semibold mb-4">오늘의 예약</h2>
                 {/* FullCalendar Day View */}
-                <div className="h-[700px] overflow-y-auto">
-                    {/* <FullCalendarComponent view="timeGridDay" /> */}
+                <div className="grow overflow-y-auto">
+                    <CalendarComponent view="day" /> 
                 </div>
             </div>
         </div>
