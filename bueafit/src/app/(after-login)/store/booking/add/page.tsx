@@ -112,6 +112,14 @@ export default function Page() {
 
     const [memo, setMemo] = useState(''); // 메모
 
+    // 결제 방식
+    const [paymentMethod, setPaymentMethod] = useState(''); // 결제 방식
+    const paymentOptions = [
+        { value: "CARD", label: "카드" },
+        { value: "CASH", label: "현금" },
+        { value: "UNPAID", label: "외상" },
+    ];
+
     const nameRef = useRef<HTMLInputElement>(null); // 고객 이름 input ref
     // const statusRef = useRef<HTMLUListElement>(null); // 예약 단계 select ref
     const treatmentNameRef = useRef<HTMLInputElement>(null); // 시술 이름 input ref
@@ -599,8 +607,18 @@ export default function Page() {
                     </div>
                 </div>
 
-                <div className="">
-                    <label className="block font-medium text-gray-700 mt-3">메모</label>
+                <div className="space-y-1 mt-6">
+                    <label className="block text-sm font-medium text-gray-700">결제 방식</label>
+                    <CustomSelect
+                        value={paymentMethod}
+                        onChange={setPaymentMethod}
+                        options={paymentOptions}
+                        placeholder="결제 방식을 선택하세요"
+                    />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">메모</label>
                     <input 
                         type="text" 
                         value={memo}

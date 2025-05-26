@@ -1,6 +1,7 @@
-'use client'
+// 'use client'
 
 import { EventApi } from "@fullcalendar/core";
+import Link from "next/link";
 // import Button from "../components/Button";
 // import { useRouter } from "next/navigation";
 // import { useModalStore } from "@/store/useModalStore";
@@ -57,6 +58,11 @@ export default function Schedule({event}: EventComponentProps) {
                         {STATUS_LABELS[event.extendedProps.status] || "알 수 없음"}
                     </span>
                 </p>
+                <p className="text-sm text-gray-600">
+                    결제 방식: <span className="font-medium text-gray-800">
+                        {event.extendedProps.payment_method_label || "방식이 선택되지 않았습니다."}
+                    </span>
+                </p>
                 {
                     event.extendedProps.memo ? (
                         <p className="text-sm text-gray-600">
@@ -83,6 +89,9 @@ export default function Schedule({event}: EventComponentProps) {
                 )}
             </div>
             <div className="flex items-center justify-end gap-2 mt-8">
+                <Link href={`booking/detail/${encodeURIComponent(event.id)}`} className="rounded bg-violet-400 text-white px-4 py-2 hover:bg-blue-700 transition-colors">
+                    수정
+                </Link>
                 {/* <Button 
                     type="button"
                     onClick={() => {

@@ -23,13 +23,33 @@
     background-color: #a684ff !important;
 }
 
-/* 달력 이벤트 색 표시 */
+/* 달력 이벤트 커스텀 */
+.fc-daygrid-event-harness{
+    border-bottom:1px solid #a684ff
+}
 .fc-v-event{
-    background-color: #a684ff;
+    background-color: white;
+    color: #222;
     border: none;
+}
+.fc-h-event{
+    background-color: white;
+    color: #222;
+    border: none;
+}
+.fc-h-event .fc-event-main{
+    color: #222;
+}
+.fc-v-event .fc-event-main{
+    color: #222;
+    border: 1px solid #cbcbcb
 }
 
 /* 달력 오늘 표시 */
+/* .fc-timegrid-event-harness.fc-timegrid-event-harness-inset {
+    width: fit-content;
+    min-width: 100px;
+} */
 .fc .fc-daygrid-day.fc-day-today{
     background-color: #efeaff;
 }
@@ -46,4 +66,12 @@
 }
 .fc-theme-standard td {
     border-bottom: none !important;
+}
+
+
+
+.fc-event-main >div >h2, .fc-event-main >div >p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

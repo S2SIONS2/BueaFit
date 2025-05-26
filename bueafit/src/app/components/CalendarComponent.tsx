@@ -8,6 +8,7 @@ import ReverseSchedule from "./ReserveSchedule";
 import { useEffect, useMemo, useState } from "react";
 import { fetchInterceptors } from "../utils/fetchInterceptors";
 import "./calendar.css"
+import dayjs from "dayjs";
 
 interface EventInput {
   title: string;
@@ -52,12 +53,22 @@ export default function CalendarComponent({view = 'all'}: CalendarProps) {
     return scheduleList.map((item) => {
       const phonebook = item.phonebook;
 
+      // 총 duration 계산
+      const totalDurationMin = item.treatment_items.reduce((sum, t) => {
+        return sum + (t.duration_min || 0);
+      }, 0);
+
+      // reserved_at + totalDurationMin 만큼 더한 시간 계산
+      const periodTime = dayjs(item.reserved_at).add(totalDurationMin, "minute").toISOString()
+
       return {
         title: phonebook?.name || "예약",
         id: item.id,
         start: item.reserved_at,
-        end: item.finished_at,
+        end: periodTime,
         extendedProps: {
+          payment_method: item.payment_method,
+          payment_method_label: item.payment_method_label,
           phonebook_id: item.phonebook_id,
           phone: phonebook?.phone_number,
           group: phonebook?.group_name,
@@ -118,6 +129,8 @@ export default function CalendarComponent({view = 'all'}: CalendarProps) {
   return (
     <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+      dayMaxEvents={2}
+      dayMaxEventRows={2}
       initialView={selectedView.initialView}
       headerToolbar={selectedView.headerToolbar}
       allDaySlot={selectedView.allDaySlot}

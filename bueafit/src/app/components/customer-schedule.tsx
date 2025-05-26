@@ -84,6 +84,10 @@ export default function CustomerSchedule({customerId}: customerProps) {
                             <span className="font-semibold">예약 상태:</span>{" "}
                             {STATUS_LABELS[item.status] || "알 수 없음"}
                         </p>
+                         <p className="text-sm text-gray-700 mb-3">
+                            <span className="font-semibold">결제 방식:</span>{" "}
+                            {item.payment_method_label || "방식이 선택되지 않았습니다."}  
+                        </p>
 
                         <div className="space-y-2 pl-2 border-l-2 border-blue-200">
                             {item.treatment_items.map((treatment, tIndex) => (
@@ -91,14 +95,14 @@ export default function CustomerSchedule({customerId}: customerProps) {
                                     key={tIndex}
                                     className="text-sm text-gray-600 bg-white rounded p-3 shadow-sm border"
                                 >
-                                <p>
-                                    <span className="font-medium">시술 명:</span>{" "}
-                                    {treatment.menu_detail.name}
-                                </p>
-                                <p>
-                                    <span className="font-medium">시술 가격:</span>{" "}
-                                    {treatment.menu_detail.base_price.toLocaleString()}원
-                                </p>
+                                    <p>
+                                        <span className="font-medium">시술 명:</span>{" "}
+                                        {treatment.menu_detail.name}
+                                    </p>
+                                    <p>
+                                        <span className="font-medium">시술 가격:</span>{" "}
+                                        {treatment.menu_detail.base_price.toLocaleString()}원
+                                    </p>
                                 </div>
                             ))}
                         </div>
