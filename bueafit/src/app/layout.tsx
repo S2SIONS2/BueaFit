@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Modal from "@/app/components/modal";
 import "./globals.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +33,7 @@ export default function RootLayout({
       >
         {children}
         <Modal />
+        <ToastContainer position="top-center" autoClose={2000} />
       </body>
     </html>
   );

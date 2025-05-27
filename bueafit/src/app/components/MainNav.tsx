@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStore, faRectangleList, faUserPen, faGear, faRightFromBracket, faCaretDown, faSprayCan, faCircle, faCalendarDay } from "@fortawesome/free-solid-svg-icons";
+import { faStore, faRectangleList, faUserPen, faGear, faRightFromBracket, faCaretDown, faSprayCan, faCircle, faCalendarDay, faShop } from "@fortawesome/free-solid-svg-icons";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { fetchInterceptors } from "../utils/fetchInterceptors";
@@ -16,7 +16,7 @@ export default function MainNav() {
     const accessToken = useAuthStore.getState().access_token;
 
     // 현재 선택된 가게 정보 가져오기
-    const [list, setList] = useState<{ name?: string }>({});
+    const [list, setList] = useState<{ name?: string, id?: number }>({ id: 0, name: "" });
     useEffect(() => {
         const getList = async () => {
             const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/selected`, {
@@ -27,8 +27,8 @@ export default function MainNav() {
             })
 
             const data = await res.json()
-            setList(data)
             if(res.status === 200) {
+                setList(data)
             }
         }
 
@@ -167,7 +167,18 @@ export default function MainNav() {
                         <FontAwesomeIcon icon={faSprayCan} className="text-violet-300 mr-[10px] text-[20px] w-[20px]" />
                         시술 메뉴 관리
                     </Link>
-                    
+                    <Link 
+                        href={{
+                            pathname: `/store/manage/${list.id}`,
+                        }}
+                        className={`
+                            text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md transition-all
+                            ${path === `/store/manage/${encodeURIComponent(list.id ?? 0)}` ? 'bg-gray-100 text-[#111]' : ''}
+                        `}
+                        >
+                        <FontAwesomeIcon icon={faShop} className="text-violet-300 mr-[10px] text-[20px] w-[20px]" />
+                        직원 관리
+                    </Link>
                 </div>
             </div>
             <div className="flex flex-col text-gray-500 mb-[30px]">

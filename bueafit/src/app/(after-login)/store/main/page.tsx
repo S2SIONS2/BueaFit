@@ -10,9 +10,9 @@ import Charts from "@/app/components/Charts";
 import MainSkeleton from "@/app/components/skeleton/main-skeleton";
 
 type Treatment = {
-        status: string;
-        reserved_at: string;
-        [key: string]: any;
+    status: string;
+    reserved_at: string;
+    [key: string]: any;
 };
 
 export default function Page() {
@@ -118,7 +118,6 @@ export default function Page() {
 
     return (
         <div className="w-full min-h-full p-6 bg-[#f8f9fb]">
-            {/* <MainSkeleton />  */}
             {
                 loading ? <MainSkeleton /> : (
                     <div>
@@ -152,21 +151,26 @@ export default function Page() {
                                         예약 내역
                                     </h3>
                                     {
-                                        todayStatus.map((item, index) => (
-                                            <ul key={index} className="space-y-3 text-sm max-h-[200px] overflow-y-auto">
-                                                <li className={`border-l-4 ${borderColors[index % borderColors.length]} pl-2 mb-4`}>
-                                                    <p className="font-semibold">{item.phonebook.name}</p>
-                                                    <p className="text-gray-500">
-                                                        {item.treatment_items.map((treatment, idx) => (
-                                                            <span key={idx} className="inline-block mr-1">
-                                                                {treatment.menu_detail.name}
-                                                            </span>
-                                                        ))}
-                                                    </p>
-                                                </li> 
-                                            </ul>
-                                        ))
+                                        todayStatus.length > 0 ? (
+                                            todayStatus.map((item, index) => (
+                                                <ul key={index} className="space-y-3 text-sm max-h-[200px] overflow-y-auto">
+                                                    <li className={`border-l-4 ${borderColors[index % borderColors.length]} pl-2 mb-4`}>
+                                                        <p className="font-semibold">{item.phonebook.name}</p>
+                                                        <p className="text-gray-500">
+                                                            {item.treatment_items.map((treatment, idx) => (
+                                                                <span key={idx} className="inline-block mr-1">
+                                                                    {treatment.menu_detail.name}
+                                                                </span>
+                                                            ))}
+                                                        </p>
+                                                    </li> 
+                                                </ul>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500">금일 예약이 없습니다.</p>   
+                                        )
                                     }
+                                    
                                 </div>
 
                                 <div className="h-full bg-white rounded-xl p-4 shadow lg:col-span-2">
