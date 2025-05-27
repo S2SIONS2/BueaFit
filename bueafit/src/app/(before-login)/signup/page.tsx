@@ -16,7 +16,7 @@ export default function Page() {
     const router = useRouter();
 
     const [checkEmailText, setCheckEmailText] = useState('') // 이메일 중복 체크
-    const [emailExists, setEmailExists] = useState(Boolean)
+    const [emailExists, setEmailExists] = useState(false)
 
     const [step, setStep] = useState(1);
     const [inviteCode, setInviteCode] = useState('')

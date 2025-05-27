@@ -17,7 +17,7 @@ export default function Charts({ title, data, dataKey, type }: ChartsProps) {
     return (
         <div className="bg-white rounded-xl p-4 shadow">
             <h3 className="text-sm font-semibold text-gray-700 mb-2">{title}</h3>
-            <div className="h-40 bg-gray-100 rounded p-3">
+            <div className="h-70 bg-gray-100 rounded p-3">
                 {type === "bar" && (
                     data.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
