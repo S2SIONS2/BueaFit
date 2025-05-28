@@ -15,11 +15,46 @@ import 'react-toastify/dist/ReactToastify.css';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+interface ManagerList {
+    shop_id: number,
+    user_id: number,
+    user: ManagerUserList
+}
+interface ManagerUserList {
+    id: number,
+    email: string,
+    name: string
+    created_at: string
+}
+
 export default function Page() {
     const params = useParams();
     const shopId = params.id; // shop id
     const [inviteCode, setInviteCode] = useState('');
     const [expired, setExpired] = useState('');
+
+    const [managerList, setManagerList] = useState<ManagerList[]>([]) // 직원 목록
+
+    // 직원 목록 조회
+    const fetchManagers = async () => {
+        try {
+            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/${shopId}/users`, {
+                method: "GET",
+                headers: {
+                    "Content-Type" : "application/json"
+                }
+            })
+            const data = await res.json()
+            if(res.status === 200) {
+                // 사장님 제외 직원만 값에 담기
+                const filteredData = data.filter((item) => item.user.role === "MANAGER");
+                setManagerList(filteredData);
+            }
+
+        }catch(e){
+            console.log(e)
+        }
+    }
 
     // 초대 코드 생성
     const createCode = async () => {
@@ -54,8 +89,13 @@ export default function Page() {
     };
 
     useEffect(() => {
+        fetchManagers()
         fetchCode();
     }, []);
+    
+    useEffect(() => {
+        console.log(managerList)
+    }, [managerList])
 
     return (
         <div className="h-full p-4 sm:p-6 flex flex-col space-y-6 bg-white">
@@ -119,10 +159,26 @@ export default function Page() {
                 </div>
             </section>
 
-            <section className="bg-white rounded-xl shadow p-4 space-y-3">
+            <section className="bg-white rounded-xl shadow p-4 space-y-4">
                 <h2 className="text-lg font-semibold text-gray-800">직원 목록</h2>
-                <p>직원 목록 API를 개발 중입니다.</p>
-            </section>
+                {
+                    managerList.length === 0 ? (
+                    <p className="text-gray-500">등록된 직원이 없습니다.</p>
+                    ) : (
+                    managerList.map((item, index) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-2 hover:shadow-sm transition-shadow">
+                            <div className="flex items-center justify-between">
+                                <p className="text-base font-semibold text-gray-800">{item.user.name}</p>
+                                <span className="text-xs text-gray-400">{new Date(item.user.created_at).toLocaleDateString('ko-KR')}</span>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                                <p><span className="font-medium text-gray-700">이메일:</span> {item.user.email}</p>
+                            </div>
+                        </div>
+                    ))
+                    )
+                }
+                </section>
         </div>
     );
 }

@@ -86,7 +86,7 @@ export default function Page() {
         }
         
         try{
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/users/`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/users`, {
                 method: "POST",
                 headers: {
                     'Content-Type' : 'application/json'
@@ -122,7 +122,7 @@ export default function Page() {
         }
         
         try{
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/users/`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/users`, {
                 method: "POST",
                 headers: {
                     'Content-Type' : 'application/json'
