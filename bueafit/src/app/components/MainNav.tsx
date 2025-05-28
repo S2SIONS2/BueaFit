@@ -139,6 +139,20 @@ export default function MainNav() {
                             </ul>
                         )
                     }
+                    {/* <Link
+                        href="/store/statistics"
+                        className={`
+                            text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md transition-all
+                            ${
+                                path === '/store/statistics' 
+                                    ? 'bg-gray-100 text-[#111]'
+                                    : ''
+                            }
+                        `}
+                    >
+                        <FontAwesomeIcon icon={faCoins} className="text-violet-300 mr-[10px] text-[20px] w-[20px]" />
+                        가게 통계
+                    </Link> */}
                     <Link
                         href="/store/customer"
                         className={`

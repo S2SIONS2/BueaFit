@@ -37,10 +37,11 @@ export default function Page() {
 
     const [status, setStatus] = useState('RESERVED')
     const statusOptions = [
-        { value: "RESERVED", label: "예약"},
-        { value: "VISITED", label: "시술 완료"},
-        { value: "CANCELLED", label: "예약 취소"},
-        { value: "NO_SHOW", label: "노쇼"}
+        { value: "RESERVED", label: "예약 완료" },
+        { value: "VISITED", label: "방문 완료" },
+        { value: "CANCELLED", label: "예약 취소" },
+        { value: "NO_SHOW", label: "노쇼" },
+        { value: "COMPLETED", label: "시술 완료" },
     ]
 
     // 시술 예약 날짜 기본 값
@@ -388,7 +389,6 @@ export default function Page() {
                                             </div>
                                         )}
                                     </li>
-
                                 ))
                             }   
                         </ul>
@@ -630,7 +630,7 @@ export default function Page() {
 
             </form>
             
-            <div className="mb-6">
+            <div>
                 <div className="pt-5 mt-5 flex items-center space-x-3">
                     <button 
                         type="button"

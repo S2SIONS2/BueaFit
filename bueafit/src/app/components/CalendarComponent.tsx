@@ -73,6 +73,7 @@ export default function CalendarComponent({view = 'all'}: CalendarProps) {
           phone: phonebook?.phone_number,
           group: phonebook?.group_name,
           status: item.status,
+          status_label: item.status_label,
           memo: item.memo,
           treatment_items: item.treatment_items.map((t) => ({
             treatment_id: t.treatment_id,

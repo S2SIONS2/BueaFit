@@ -1,10 +1,10 @@
-// 'use client'
+'use client'
 
 import { EventApi } from "@fullcalendar/core";
-import Link from "next/link";
-// import Button from "../components/Button";
-// import { useRouter } from "next/navigation";
-// import { useModalStore } from "@/store/useModalStore";
+// import Link from "next/link";
+import Button from "../components/Button";
+import { useRouter } from "next/navigation";
+import { useModalStore } from "@/store/useModalStore";
 
 interface EventComponentProps {
   event: EventApi;
@@ -17,18 +17,10 @@ export default function Schedule({event}: EventComponentProps) {
         hour12: false,
     })
 
-    // const route = useRouter();
+    const route = useRouter();
 
     // 모달 닫기
-    // const { closeModal } = useModalStore();
-
-    // status 표시
-    const STATUS_LABELS: Record<string, string> = {
-        RESERVED: " 예약 완료",
-        VISITED: " 시술 완료",
-        CANCELED: " 취소됨",
-        NO_SHOW: " 노쇼",      
-    };
+    const { closeModal } = useModalStore();
 
     // 수정하기
     // const modifyList = () => {
@@ -55,7 +47,7 @@ export default function Schedule({event}: EventComponentProps) {
 
                 <p className="text-sm text-gray-600">
                     예약 여부: <span className="font-medium text-gray-800">
-                        {STATUS_LABELS[event.extendedProps.status] || "알 수 없음"}
+                        {event.extendedProps.status_label || "알 수 없음"}
                     </span>
                 </p>
                 <p className="text-sm text-gray-600">
@@ -77,8 +69,8 @@ export default function Schedule({event}: EventComponentProps) {
                         <p>시술 항목:</p>
                         {event.extendedProps.treatment_items.map((item, index) => (
                             <li
-                            key={index}
-                            className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 border border-gray-200"
+                                key={index}
+                                className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 border border-gray-200"
                             >
                              <span className="font-medium">{item.name} [{item.session_no}차]</span>
                         </li>
@@ -89,10 +81,15 @@ export default function Schedule({event}: EventComponentProps) {
                 )}
             </div>
             <div className="flex items-center justify-end gap-2 mt-8">
-                <Link href={`booking/detail/${encodeURIComponent(event.id)}`} className="rounded bg-violet-400 text-white px-4 py-2 hover:bg-blue-700 transition-colors">
+                {/* <Link 
+                    href={{
+                        pathname: `detail/${encodeURIComponent(event.id)}`,
+                    }} 
+                    className="rounded bg-violet-400 text-white px-4 py-2 hover:bg-violet-700 transition-colors"
+                >
                     수정
-                </Link>
-                {/* <Button 
+                </Link> */}
+                <Button 
                     type="button"
                     onClick={() => {
                         route.push(`detail/${encodeURIComponent(event.id)}`)
@@ -101,7 +98,7 @@ export default function Schedule({event}: EventComponentProps) {
                     className="rounded h-[35px] flex items-center"
                 >
                     수정
-                </Button> */}
+                </Button>
                 {/* <button 
                     type="button"
                     onClick={() => deleteList()}

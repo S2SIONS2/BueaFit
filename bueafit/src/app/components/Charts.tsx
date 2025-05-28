@@ -12,7 +12,7 @@ interface ChartsProps {
 }
 
 export default function Charts({ title, data, dataKey, type }: ChartsProps) {
-    const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042"];
+    const COLORS = ["#959dd6", "#c0d695", "#ffc658", "#ff8042", "#d69595", "aa95d6", "f1eba1"];
         
     return (
         <div className="bg-white rounded-xl p-4 shadow">
@@ -26,7 +26,7 @@ export default function Charts({ title, data, dataKey, type }: ChartsProps) {
                                 <XAxis dataKey="name" />
                                 <YAxis />
                                 <Tooltip />
-                                <Bar dataKey={dataKey} fill="#82ca9d" />
+                                <Bar dataKey={dataKey} fill="#d69595" />
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (
@@ -69,10 +69,10 @@ export default function Charts({ title, data, dataKey, type }: ChartsProps) {
                                     label
                                 >
                                     {data.map((_, index) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={COLORS[index % COLORS.length]}
-                                    />
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={COLORS[index % COLORS.length]}
+                                        />
                                     ))}
                                 </Pie>
                             </PieChart>
