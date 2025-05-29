@@ -44,7 +44,7 @@ export default function Charts({ title, data, dataKey, type }: ChartsProps) {
                                 <XAxis dataKey="name" />
                                 <YAxis />
                                 <Tooltip />
-                                <Line type="monotone" dataKey={dataKey} stroke="#8884d8" />
+                                <Line type="monotone" dataKey={dataKey} stroke="#f1eba1" />
                             </LineChart>
                         </ResponsiveContainer>
                     ) : (

@@ -308,13 +308,9 @@ export default function Page() {
             }),
         });
 
-        console.log("payment_method:", paymentMethod);
-
         if (res.status === 200) {
             route.back()
         }
-
-        console.log(await res.json())
     };
 
     // data 로딩중에
@@ -399,21 +395,32 @@ export default function Page() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">예약 시간</label>
-                                <CustomSelect
-                                    value={reserveTime}
-                                    onChange={setReserveTime}
-                                    options={timeOptions}
-                                    onFocus={() => setShowCustomerList(false)}
-                                />
-                            </div>
-
-                            <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">예약 상태</label>
                                 <CustomSelect
                                     value={status}
                                     onChange={setStatus}
                                     options={statusOptions}
+                                    onFocus={() => setShowCustomerList(false)}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">예약 날짜</label>
+                                <input type="date" 
+                                    value={reserveDate}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                    onChange={(e) => setReserveDate(e.target.value)}
+                                    onFocus={() => setShowCustomerList(false)}
+                                    placeholder={reserveDate}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">예약 시간</label>
+                                <CustomSelect
+                                    value={reserveTime}
+                                    onChange={setReserveTime}
+                                    options={timeOptions}
                                     onFocus={() => setShowCustomerList(false)}
                                 />
                             </div>
@@ -511,7 +518,7 @@ export default function Page() {
                         )}
                     </section>
                     <section className="space-y-1 relative pb-[130px]">
-                        <details className="space-y-4">
+                        <details className="space-y-4 border-b border-gray-300 pb-2">
                             <summary className="text-lg font-semibold text-gray-800 flex justify-between items-center cursor-pointer">
                                 시술 추가
                                 <FontAwesomeIcon icon={faPlus} />

@@ -1,7 +1,6 @@
 'use client'
 
 import { EventApi } from "@fullcalendar/core";
-// import Link from "next/link";
 import Button from "../components/Button";
 import { useRouter } from "next/navigation";
 import { useModalStore } from "@/store/useModalStore";
@@ -22,11 +21,7 @@ export default function Schedule({event}: EventComponentProps) {
     // 모달 닫기
     const { closeModal } = useModalStore();
 
-    // 수정하기
-    // const modifyList = () => {
-
-    //     return;
-    // }
+    // 삭제하기
     // const deleteList = () => {
     //     return;
     // }

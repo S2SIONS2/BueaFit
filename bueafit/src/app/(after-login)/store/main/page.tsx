@@ -8,12 +8,57 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Charts from "@/app/components/Charts";
 import MainSkeleton from "@/app/components/skeleton/main-skeleton";
+import { useModalStore } from "@/store/useModalStore";
+import ReserveSchedule from "@/app/modal/ReserveSchedule";
 
 type Treatment = {
-    status: string;
+    id: number;
+    shop_id: number;
+    phonebook_id: number;
+    phonebook: Phonebook;
     reserved_at: string;
-    [key: string]: any;
+    finished_at: string;
+    status: "RESERVED" | "VISITED" | "CANCELLED" | "NO_SHOW" | "COMPLETED";
+    status_label: string;
+    payment_method: "CARD" | "CASH" | "UNPAID";
+    payment_method_label: string;
+    memo: string;
+    staff_user_id: number | null;
+    created_at: string;
+    updated_at: string;
+    created_user_id: number;
+    treatment_items: TreatmentItem[];
 };
+
+interface Phonebook {
+    id: number;
+    name: string;
+    phone_number: string;
+    group_name: string;
+    memo: string;
+    shop_id: number;
+    created_at: string;
+    updated_at: string;
+}
+
+interface TreatmentItem {
+    id: number;
+    treatment_id: number;
+    menu_detail_id: number;
+    base_price: number;
+    duration_min: number;
+    session_no: number;
+    created_at: string;
+    updated_at: string;
+    menu_detail?: MenuDetail;
+}
+
+interface MenuDetail {
+    menu_id: number;
+    name: string;
+    duration_min: number;
+    base_price: number;
+}
 
 export default function Page() {
     dayjs.extend(utc);
@@ -70,6 +115,7 @@ export default function Page() {
 
         data.forEach((treatment) => {
             treatment.treatment_items.forEach((item) => {
+            if (!item.menu_detail) return;
             const name = item.menu_detail.name;
             const price = item.menu_detail.base_price;
 
@@ -87,7 +133,7 @@ export default function Page() {
         data.forEach((treatment) => {
             treatment.treatment_items.forEach((item) => {
                 if (treatment.status !== "COMPLETED") return;
-
+                if (!item.menu_detail) return;
                 const name = item.menu_detail.name;
                 const price = item.menu_detail.base_price;
                 map.set(name, (map.get(name) || 0) + price);
@@ -103,6 +149,7 @@ export default function Page() {
 
         data.forEach((treatment) => {
             treatment.treatment_items.forEach((item) => {
+                if (!item.menu_detail) return;
                 const name = item.menu_detail.name;
                 map.set(name, (map.get(name) || 0) + 1);
             });
@@ -111,10 +158,13 @@ export default function Page() {
         return Array.from(map, ([name, count]) => ({ name, count }));
     }
 
-
+    // 차트 data 생성
     const expectedRevenueData = getChartDataByExpected(treatmentItems);
     const totalRevenueData = getChartDataByTotal(treatmentItems);
     const countData = getChartDataByCount(treatmentItems);
+
+    // 스케줄 모달 오픈
+    const openModal = useModalStore((state) => state.openModal)
 
     return (
         <div className="w-full min-h-full p-6 bg-[#f8f9fb]">
@@ -154,12 +204,15 @@ export default function Page() {
                                         todayStatus.length > 0 ? (
                                             todayStatus.map((item, index) => (
                                                 <ul key={index} className="space-y-3 text-sm max-h-[200px] overflow-y-auto">
-                                                    <li className={`border-l-4 ${borderColors[index % borderColors.length]} pl-2 mb-4`}>
+                                                    <li 
+                                                        className={`border-l-4 ${borderColors[index % borderColors.length]} pl-2 pt-1 pb-1 mb-3 cursor-pointer hover:bg-gray-100`}
+                                                        onClick={() => openModal(<ReserveSchedule list={todayStatus[index]} />)}
+                                                    >
                                                         <p className="font-semibold">{item.phonebook.name}</p>
                                                         <p className="text-gray-500">
                                                             {item.treatment_items.map((treatment, idx) => (
                                                                 <span key={idx} className="inline-block mr-1">
-                                                                    {treatment.menu_detail.name}
+                                                                    {treatment.menu_detail?.name}
                                                                 </span>
                                                             ))}
                                                         </p>
@@ -186,7 +239,7 @@ export default function Page() {
                                                 <p className="text-gray-500">
                                                     {item.treatment_items.map((treatment, idx) => (
                                                         <span key={idx} className="inline-block mr-1">
-                                                            {treatment.menu_detail.name}
+                                                            {treatment.menu_detail?.name}
                                                         </span>
                                                     ))}
                                                 </p>
