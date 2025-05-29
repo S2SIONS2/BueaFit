@@ -18,10 +18,14 @@ import code from '../../public/CodeImage.png'
 
 export default function Home() {
     // 로그인 됐을 때 페이지 못오게 이동
-    const refreshToken = localStorage.getItem('refresh_token');
-    if (refreshToken) {
-        redirect('/selectstore');
-    }
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("refresh_token");
+            if (token) {
+                redirect("/selectstore");
+            }
+        }
+    }, []);
 
     // gsap 애니메이션
     const bounceRef1 = useRef<HTMLSpanElement>(null); // "뷰"
