@@ -77,13 +77,15 @@ export default function Page() {
                     "memo" : memo
                 })            
             })
+
+            console.log(response.status)
             
             if(response.status === 201) {
                 route.push('/store/customer')
                 return;
             }
 
-            if(response.status === 409 ) {
+            if(response.status === 409) {
                 alert('등록 된 전화번호 입니다.')
             }
 
@@ -209,7 +211,7 @@ export default function Page() {
                         등록 취소
                     </button>
                     <Button
-                        type="submit"
+                        type="button"
                         className="w-full h-[40px] bg-violet-400 hover:bg-violet-500 text-white font-semibold py-2 px-4"
                         onClick={() => {newCustomer()}}
                     >

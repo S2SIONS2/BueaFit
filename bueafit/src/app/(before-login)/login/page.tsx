@@ -3,10 +3,16 @@
 import Button from "@/app/components/Button";
 import { useAuthStore } from "@/store/useAuthStore";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Page() {
+    // 액세스 토큰 or 리프레시 토큰이 있을 때 로그인, 소개, 회원가입 페이지 못오게
+    const refreshToken = localStorage.getItem('refresh_token')
+    if(refreshToken) {
+      redirect('/selectstore')
+    }
+
     const [email, setEmail] = useState('solee9802@gmail.com'); // 이메일 기본 등록
     const [pw, setPw] = useState('123456'); // 비밀번호 기본 등록
 

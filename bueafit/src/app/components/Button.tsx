@@ -31,11 +31,11 @@ type ButtonProps = {
             await onClick();
         } finally {
             setIsLoading(false);
-
-        // 2초 뒤 락 해제 (debounce)
-        setTimeout(() => {
-            lockRef.current = false;
-        }, 2000);
+            
+            // 1초 뒤 락 해제 (debounce)
+            setTimeout(() => {
+                lockRef.current = false;
+        }, 1000);
     }
 };
 

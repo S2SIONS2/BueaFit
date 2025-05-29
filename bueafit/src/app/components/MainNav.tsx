@@ -45,7 +45,8 @@ export default function MainNav() {
                 },
             })            
             if (response.status === 200) {
-                if(confirm('로그아웃 하시겠습니까?')) {    
+                if(confirm('로그아웃 하시겠습니까?')) {
+                    localStorage.setItem('refresh_token', '')
                     window.location.href = '/login';   
                 };
             } else {
