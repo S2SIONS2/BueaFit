@@ -52,7 +52,7 @@ export default function Page() {
             }
 
         }catch(e){
-            console.log(e)
+            console.error(e)
         }
     }
 
@@ -92,10 +92,6 @@ export default function Page() {
         fetchManagers()
         fetchCode();
     }, []);
-    
-    useEffect(() => {
-        console.log(managerList)
-    }, [managerList])
 
     return (
         <div className="h-full p-4 sm:p-6 flex flex-col space-y-6 bg-white">

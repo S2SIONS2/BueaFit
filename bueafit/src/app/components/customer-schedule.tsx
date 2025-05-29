@@ -29,7 +29,6 @@ export default function CustomerSchedule({customerId}: customerProps) {
 
             if (res.status === 200) {
                 const filteredData = data.items.filter((item) => item.phonebook_id === customerId)
-                console.log(filteredData)
                 setScheduleList(filteredData);
             }
         } catch (e) {
@@ -42,14 +41,6 @@ export default function CustomerSchedule({customerId}: customerProps) {
     useEffect(() => {
         fetchScheduleList();
     }, []);
-
-    // 예약 상태 표시
-    const STATUS_LABELS: Record<string, string> = {
-        RESERVED: " 예약 완료",
-        VISITED: " 시술 완료",
-        CANCELED: " 취소됨",
-        NO_SHOW: " 노쇼",      
-    };
 
     const reservedSchedules = scheduleList.filter((item) => item.status === "RESERVED");
     const completedSchedules = scheduleList.filter((item) => item.status !== "RESERVED");
@@ -82,7 +73,7 @@ export default function CustomerSchedule({customerId}: customerProps) {
                         </p>
                         <p className="text-sm text-gray-700 mb-3">
                             <span className="font-semibold">예약 상태:</span>{" "}
-                            {STATUS_LABELS[item.status] || "알 수 없음"}
+                            {item.status_label || "알 수 없음"}
                         </p>
                          <p className="text-sm text-gray-700 mb-3">
                             <span className="font-semibold">결제 방식:</span>{" "}
@@ -97,7 +88,11 @@ export default function CustomerSchedule({customerId}: customerProps) {
                                 >
                                     <p>
                                         <span className="font-medium">시술 명:</span>{" "}
-                                        {treatment.menu_detail.name}
+                                        {treatment.menu_detail.name} [{treatment.session_no}차]
+                                    </p>
+                                    <p>
+                                        <span className="font-medium">시술 가격:</span>{" "}
+                                        {treatment.menu_detail.base_price.toLocaleString()}원
                                     </p>
                                     <p>
                                         <span className="font-medium">시술 가격:</span>{" "}
@@ -121,14 +116,16 @@ export default function CustomerSchedule({customerId}: customerProps) {
                     <ul className="divide-y divide-gray-200">
                         {completedSchedules.map((item, index) => (
                             <li key={index} className="py-4">
-                            <div className="text-sm text-gray-800 font-medium mb-1">
-                                예약 날짜: {dayjs(item.reserved_at).format("YYYY-MM-DD")} (
-                                {STATUS_LABELS[item.status] || "알 수 없음"})
+                            <div className="text-sm text-gray-800 font-medium mb-2">
+                                예약 날짜: {dayjs(item.reserved_at).format("YYYY-MM-DD")} 
+                            </div>
+                            <div className="text-sm text-gray-800 font-medium mb-2">
+                                예약 상태: {item.status_label}
                             </div>
                             <ul className="ml-4 list-disc text-sm text-gray-600">
                                 {item.treatment_items.map((treatment, tIndex) => (
                                 <li key={tIndex}>
-                                    {treatment.menu_detail.name} -{" "}
+                                    {treatment.menu_detail.name} {" "} [{treatment.session_no}차] -{" "} 
                                     {treatment.menu_detail.base_price.toLocaleString()}원
                                 </li>
                                 ))}
