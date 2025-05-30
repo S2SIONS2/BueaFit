@@ -7,7 +7,7 @@ let refreshTokenPromise: Promise<{ access_token: string; refresh_token: string }
 
 export async function fetchInterceptors(input: RequestInfo, init?: RequestInit): Promise<Response> {
   const { access_token, setToken, clearToken } = useAuthStore.getState();
-  const refresh_token = localStorage.getItem("refresh_token");
+  const refresh_token = sessionStorage.getItem("refresh_token");
 
   // 최초 요청
   const withAuthInit: RequestInit = {
@@ -39,7 +39,7 @@ export async function fetchInterceptors(input: RequestInfo, init?: RequestInit):
         if (!res.ok) throw new Error("리프레시 실패");
         const data = await res.json();
         setToken(data.access_token);
-        localStorage.setItem("refresh_token", data.refresh_token);
+        sessionStorage.setItem("refresh_token", data.refresh_token);
         return data;
       })
       .finally(() => {

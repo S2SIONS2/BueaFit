@@ -10,7 +10,7 @@ export default function Page() {
     // 액세스 토큰 or 리프레시 토큰이 있을 때 로그인, 소개, 회원가입 페이지 못오게
     useEffect(() => {
       if (typeof window !== "undefined") {
-        const token = localStorage.getItem("refresh_token");
+        const token = sessionStorage.getItem("refresh_token");
         if (token) {
           redirect("/selectstore");
         }
@@ -65,7 +65,7 @@ export default function Page() {
               setToken(access_token);
               // refresh token local storage에 저장
               const refresh_token = jsonData.refresh_token
-              localStorage.setItem('refresh_token', refresh_token);
+              sessionStorage.setItem('refresh_token', refresh_token);
 
               // 리프레시 토큰 저장 안되는 것 방지
               await new Promise((res) => setTimeout(res, 0));

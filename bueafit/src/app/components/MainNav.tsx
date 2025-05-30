@@ -44,11 +44,10 @@ export default function MainNav() {
                     "Content-Type": "application/json",
                 },
             })            
+            console.log(await response.json())
             if (response.status === 200) {
-                if(confirm('로그아웃 하시겠습니까?')) {
-                    localStorage.setItem('refresh_token', '')
-                    window.location.href = '/login';   
-                };
+                sessionStorage.setItem('refresh_token', '')
+                window.location.href = '/login';   
             } else {
                 console.error("로그아웃 실패", response);
             }

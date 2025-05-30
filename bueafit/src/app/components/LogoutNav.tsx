@@ -11,10 +11,8 @@ export default function LogOutNav() {
                 },
             })            
             if (response.status === 200) {
-                if(confirm('로그아웃 하시겠습니까?')) {
-                    localStorage.setItem('refresh_token', '')
-                    window.location.href = '/login';   
-                };
+                sessionStorage.setItem('refresh_token', '')
+                window.location.href = '/login';   
             } else {
                 console.error("로그아웃 실패", response);
             }
@@ -31,7 +29,7 @@ export default function LogOutNav() {
                 <button
                     onClick={logout}
                     className={`
-                        text-gray-800 hover:bg-gray-100 cursor-pointer text-xm
+                        text-gray-800 hover:bg-gray-100 cursor-pointer text-[15px]
                     `}
                 >
                     로그아웃

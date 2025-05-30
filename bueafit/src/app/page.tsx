@@ -20,7 +20,7 @@ export default function Home() {
     // 로그인 됐을 때 페이지 못오게 이동
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const token = localStorage.getItem("refresh_token");
+            const token = sessionStorage.getItem("refresh_token");
             if (token) {
                 redirect("/selectstore");
             }
@@ -136,7 +136,7 @@ export default function Home() {
                 </div>
                 <div className="w-full md:w-1/2 text-center md:text-left space-y-4 px-4">
                     <h1 className="text-4xl font-bold text-gray-800 leading-snug">
-                        <div className="flex">
+                        <div className="flex md:justify-center">
                             <span ref={bounceRef1} className="text-violet-400 inline-block">뷰</span>
                             <div ref={bounceRef2}>
                                 {"티 전문 사장님에게".split("").map((char, index) => (

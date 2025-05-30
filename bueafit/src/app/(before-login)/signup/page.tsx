@@ -10,7 +10,7 @@ export default function Page() {
     // 액세스 토큰 or 리프레시 토큰이 있을 때 로그인, 소개, 회원가입 페이지 못오게
     useEffect(() => {
       if (typeof window !== "undefined") {
-        const token = localStorage.getItem("refresh_token");
+        const token = sessionStorage.getItem("refresh_token");
         if (token) {
           redirect("/selectstore");
         }
