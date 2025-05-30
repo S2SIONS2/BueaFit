@@ -257,13 +257,15 @@ export default function StoreRegistrationPage() {
     );
 
     return (
-        <div className="relative min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="relative min-h-screen h-full flex flex-col items-center bg-gray-50">
             <LogOutNav />
-            {step < 3 && renderIntroSteps()}
-            {step === 3 && renderStep3Form()}
-            {step === 4 && renderStep4Modal()}
-            {step === 5 && renderStep5Form()}
-            {step === 6 && renderStep6Complete()}
+            <article className='w-full h-full flex items-center justify-center p-4'>
+                {step < 3 && renderIntroSteps()}
+                {step === 3 && renderStep3Form()}
+                {step === 4 && renderStep4Modal()}
+                {step === 5 && renderStep5Form()}
+                {step === 6 && renderStep6Complete()}
+            </article>
         </div>
     );
 }

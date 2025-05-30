@@ -6,8 +6,9 @@ import ModifyShop from "@/app/modal/modifyShop";
 import ModifyUser from "@/app/modal/modifyUser";
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useModalStore } from "@/store/useModalStore";
-import { faCircleLeft } from "@fortawesome/free-solid-svg-icons";
+import { faCircleLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -158,6 +159,10 @@ export default function Page() {
                                 </li>
                             </ul>
                         ))}
+                        <Link href={'/setstore'} className="w-full block border p-3 rounded-lg space-y-1 text-base text-gray-700 hover:text-violet-500 text-center bg-gray-30 cursor-pointer" >
+                            <FontAwesomeIcon icon={faPlus} className="mr-1"/>
+                            가게 등록하러 가기
+                        </Link>
                     </div>
                 </section>
 
