@@ -18,6 +18,10 @@ import menu from '../../public/MenuImage.png'
 import code from '../../public/CodeImage.png'
 import Footer from "./components/Footer";
 
+// 폰트어썸
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleUp } from "@fortawesome/free-solid-svg-icons";
+
 export default function Home() {
     const route = useRouter();
 
@@ -40,17 +44,23 @@ export default function Home() {
     const introText = useRef<HTMLDivElement>(null) // 인트로 문장
     const introText2 = useRef<HTMLDivElement>(null) // 인트로 문장
 
-    const appearanceText = useRef<HTMLDivElement>(null) 
-    const appearanceText2 = useRef<HTMLDivElement>(null) 
+    const appearanceText = useRef<HTMLDivElement>(null)  // BueaFit, 뷰티샵 사장님을 위한 Perfect Fit~~
+    const appearanceText2 = useRef<HTMLDivElement>(null) // 이 모든 기능, 하나의 시스템으로
 
     // 기능 설명
     const sections = useRef<NodeListOf<Element> | null>(null);
+
+    // 하단 가입 권유 섹션 애니메이션
+    const ctaWrapperRef = useRef<HTMLDivElement>(null);
+    const ctaHeadingRef = useRef<HTMLHeadingElement>(null);
+    const ctaParagraphRef = useRef<HTMLParagraphElement>(null);
+    const ctaButtonRef = useRef<HTMLButtonElement>(null);
     
     // 스크롤 트리거
     gsap.registerPlugin(ScrollTrigger);
 
     useEffect(() => {
-        // 뷰
+        // 뷰 - 통 튀듯
         gsap.fromTo(
             bounceRef1.current,
             { y: 0 },
@@ -61,9 +71,9 @@ export default function Home() {
             { y: 0, duration: 0.4, ease: 'bounce.out', delay: 0.3 }
         );
 
-        // 티 전문 사장님에게
+        // 티 전문 사장님에게 - opacity 0에서 1이 되면서 아래에서 위로
         if (bounceRef2.current) {
-            const spans = bounceRef2.current.querySelectorAll('span');
+            const spans = bounceRef2.current.querySelectorAll('span'); // 한 글자씩 하려면 span으로 글자 마다 감아야 함
             spans.forEach((el, i) => {
                 gsap.fromTo(
                     el,
@@ -79,7 +89,7 @@ export default function Home() {
             });
         }
 
-        // 핏
+        // 핏 - 통 튀듯
         gsap.fromTo(
             bounceRef3.current,
             { y: 0 },
@@ -100,7 +110,7 @@ export default function Home() {
             }
         );
 
-        // 한 가게 관리 시스템
+        // 한 가게 관리 시스템 - opacity 0에서 1이 되면서 아래에서 위로
         if (bounceRef4.current) {
             const spans = bounceRef4.current.querySelectorAll('span');
             spans.forEach((el, i) => {
@@ -177,6 +187,7 @@ export default function Home() {
         // let scrollTriggerInstance: ScrollTrigger | null = null;
 
         const initGsap = () => {
+            // 애니메이션 섹션
             const allSections = document.querySelectorAll(".feature-slide");
             sections.current = allSections;
 
@@ -222,8 +233,9 @@ export default function Home() {
             });
         };
 
+        // 반응형 적용
         const handleResize = () => {
-            if (window.innerWidth >= 768) {
+            if (window.innerWidth >= 768) { // tailwind css 기준 md 이상부터 애니메이션 적용
                 if (!ScrollTrigger.getById("feature-scroll")) {
                     initGsap();
                 }
@@ -246,12 +258,8 @@ export default function Home() {
         };
     }, []);
 
-    // 하단 가입 권유 섹션 애니메이션
-    const ctaWrapperRef = useRef<HTMLDivElement>(null);
-    const ctaHeadingRef = useRef<HTMLHeadingElement>(null);
-    const ctaParagraphRef = useRef<HTMLParagraphElement>(null);
-    const ctaButtonRef = useRef<HTMLButtonElement>(null);
 
+    // 하단 부분 가입 권유 영역
     useEffect(() => {
         if (!ctaWrapperRef.current) return;
 
@@ -302,7 +310,13 @@ export default function Home() {
         );
     }, []);
 
-
+    // 탑 버튼 추가
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }
 
     return (
         <div className="w-full h-full bg-white">
@@ -310,6 +324,11 @@ export default function Home() {
 
             {/* 메인 소개 영역 */}
             <section className="flex flex-col items-center justify-evenly md:flex-row px-6 py-12 w-full h-screen">
+                <button type="button" onClick={scrollToTop}
+                    className="fixed bottom-[9%] right-[3%] text-4xl text-violet-300 hover:text-violet-500 cursor-pointer"
+                >
+                    <FontAwesomeIcon icon={faCircleUp} />
+                </button>
                 <div className="w-full md:w-1/2 mb-8 md:mb-0">
                     <Image
                         src={main}
@@ -404,7 +423,7 @@ export default function Home() {
             <section
                 ref={ctaWrapperRef}
                 className="bg-gradient-to-br from-violet-100 to-white py-20 px-6 text-center rounded-t-3xl shadow-inner"
-                >
+            >
                 <h2
                     ref={ctaHeadingRef}
                     className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6"
@@ -425,8 +444,7 @@ export default function Home() {
                 >
                     무료로 시작하기
                 </button>
-                </section>
-
+            </section>
             <Footer />
         </div>
     );
