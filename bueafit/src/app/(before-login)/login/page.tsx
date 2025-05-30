@@ -3,16 +3,22 @@
 import Button from "@/app/components/Button";
 import { useAuthStore } from "@/store/useAuthStore";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Page() {
+    // zustand set token
+    const setToken = useAuthStore((state) => state.setToken)
+
+    // route 
+    const route = useRouter();
+
     // 액세스 토큰 or 리프레시 토큰이 있을 때 로그인, 소개, 회원가입 페이지 못오게
     useEffect(() => {
       if (typeof window !== "undefined") {
         const token = sessionStorage.getItem("refresh_token");
         if (token) {
-          redirect("/selectstore");
+          route.back();
         }
       }
     }, []);
@@ -20,11 +26,7 @@ export default function Page() {
     const [email, setEmail] = useState('solee9802@gmail.com'); // 이메일 기본 등록
     const [pw, setPw] = useState('123456'); // 비밀번호 기본 등록
 
-    // zustand set token
-    const setToken = useAuthStore((state) => state.setToken)
-
-    // route 
-    const route = useRouter();
+    
 
     // email handler
     const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {

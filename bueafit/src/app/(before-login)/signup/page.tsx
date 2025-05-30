@@ -3,19 +3,20 @@
 import { faCircleLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link"
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react"
 
 export default function Page() {
-    // 액세스 토큰 or 리프레시 토큰이 있을 때 로그인, 소개, 회원가입 페이지 못오게
-    useEffect(() => {
-      if (typeof window !== "undefined") {
-        const token = sessionStorage.getItem("refresh_token");
-        if (token) {
-          redirect("/selectstore");
-        }
-      }
-    }, []);
+  const router = useRouter();
+  // 액세스 토큰 or 리프레시 토큰이 있을 때 로그인, 소개, 회원가입 페이지 못오게
+  useEffect(() => {
+    const token = sessionStorage.getItem("refresh_token");
+    if (token) {
+      router.back();
+    }
+    if (typeof window !== "undefined") {
+    }
+  }, []);
 
 
     const [email, setEmail] = useState<string>(''); // email
@@ -23,8 +24,6 @@ export default function Page() {
     const [checkPw, setCheckPw] = useState<string>(''); // 비밀번호 확인
     const [checkPwText, setCheckPwText] = useState<string>(''); // 비밀번호 확인 틀릴시 문구
     const [name, setName] = useState<string>(''); // name
-
-    const router = useRouter();
 
     const [checkEmailText, setCheckEmailText] = useState('') // 이메일 중복 체크
     const [emailExists, setEmailExists] = useState(false)
