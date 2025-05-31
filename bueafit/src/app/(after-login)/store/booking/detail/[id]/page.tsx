@@ -354,6 +354,7 @@ export default function Page() {
 
         // 예약 시간 (KST → UTC ISO 변환)
         const reservedKst = dayjs.tz(`${reserveDate} ${reserveTime}`, "Asia/Seoul"); // KST
+        // const reservedKst = dayjs.tz(`${reserveDate} ${reserveTime}`, "UTC"); // UTC
         const reservedUtc = reservedKst.utc().toISOString(); // UTC ISO
 
         const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatments/${paramsId}`, {

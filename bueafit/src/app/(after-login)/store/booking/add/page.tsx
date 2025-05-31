@@ -10,6 +10,9 @@ import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 interface NewCustomer {
     id: number;
@@ -20,6 +23,9 @@ interface NewCustomer {
 }
 
 export default function Page() {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+
     // 신규 등록된 고객 리스트
     const [newCustomerList, setNewCustomerList] = useState<NewCustomer[]>([]);
     const handleAddCustomer = (newCustomer: NewCustomer) => {
@@ -327,6 +333,7 @@ export default function Page() {
             return;
         }
 
+        const reservedUTC = dayjs(`${reserveDate}T${reserveTime}`).utc().toISOString(); // UTC ISO
 
         try {
             const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatments`, {
@@ -337,7 +344,7 @@ export default function Page() {
                 },
                 body: JSON.stringify({
                     phonebook_id: customerId,
-                    reserved_at: `${reserveDate}T${reserveTime}`,
+                    reserved_at: reservedUTC,
                     status : status,
                     memo : memo,
                     staff_user_id : employee,
@@ -365,6 +372,10 @@ export default function Page() {
         }
     };
 
+    useEffect(() => {
+        console.log(reserveTime)
+    },[reserveTime])
+
     const [step, setStep] = useState(1); // step 1: 고객 작성 및 고객 등록, step 2: 예약 등록
     // step 1: 고객 작성 및 고객 등록
     const handleStep1 = () => (
@@ -386,7 +397,7 @@ export default function Page() {
                 </div>
 
                 <label className="block text-sm font-medium text-gray-700">
-                    담당자 이름<span className="text-red-600 ml-1">*</span>
+                    담당자 이름
                 </label>
                 <CustomSelect 
                     value={employee}
