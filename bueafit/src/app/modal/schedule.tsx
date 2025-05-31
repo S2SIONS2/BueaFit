@@ -18,6 +18,8 @@ export default function Schedule({event}: EventComponentProps) {
 
     const route = useRouter();
 
+    //
+
     // 모달 닫기
     const { closeModal } = useModalStore();
 
@@ -35,6 +37,18 @@ export default function Schedule({event}: EventComponentProps) {
                 <h2 className="text-lg font-semibold text-gray-700">
                     예약자: <span className="text-blue-600">{event.title}</span>
                 </h2>
+
+                {
+                    event.extendedProps.staff_user_id ? (
+                        <p className="text-sm text-gray-600">
+                            시술 담당자: <span className="font-medium text-gray-800">{event.extendedProps.staff_user_name}</span>
+                        </p>
+                    ) : (
+                        <p className="text-sm text-gray-600">
+                            시술 담당자: <span className="font-medium text-gray-500">담당자 지정 안됨</span>
+                        </p>
+                    )
+                }
 
                 <p className="text-sm text-gray-600">
                     예약 시간: <span className="font-medium text-gray-800">{time}</span>

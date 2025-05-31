@@ -25,12 +25,17 @@ type Treatment = {
     payment_method: "CARD" | "CASH" | "UNPAID";
     payment_method_label: string;
     memo: string;
+    staff_user: StaffInfo;
     staff_user_id: number | null;
     created_at: string;
     updated_at: string;
     created_user_id: number;
     treatment_items: TreatmentItem[];
 };
+
+interface StaffInfo {
+    name: string
+}
 
 interface Phonebook {
     id: number;
@@ -187,10 +192,35 @@ export default function Page() {
         return Array.from(map, ([name, count]) => ({ name, count }));
     }
 
+    // 직원별 담당 시술 건수 카운트
+    function getEmployeeData(data: Treatment[]) {
+        const map = new Map<number, { name: string; count: number }>();
+
+        data.forEach((reserve) => {
+            const id = reserve.staff_user_id;
+            const name = reserve.staff_user && reserve.staff_user !== null ? reserve.staff_user.name : '지정 안됨';
+
+            if (!id || !name) return;
+
+            if (!map.has(id)) {
+                map.set(id, { name, count: 1 });
+            } else {
+                map.get(id)!.count += 1;
+            }
+        });
+
+        return Array.from(map, ([id, value]) => ({
+            id,
+            name: value.name,
+            count: value.count,
+        }));
+    }
+
     // 차트 data 생성
     const expectedRevenueData = getChartDataByExpected(treatmentItems);
     const totalRevenueData = getChartDataByTotal(treatmentItems);
     const countData = getChartDataByCount(treatmentItems);
+    const employeeData = getEmployeeData(todayStatus)
 
     // 스케줄 모달 오픈
     const openModal = useModalStore((state) => state.openModal)
@@ -286,7 +316,8 @@ export default function Page() {
                             </div> */}
                             <Charts title="시술별 예상 매출 [예약 + 외상 포함]" data={expectedRevenueData} dataKey="expected" type="bar"/>
                             <Charts title="시술별 매출 [결제 완료 건]" data={totalRevenueData} dataKey="total" type="bar"/>
-                            <Charts title="시술별 건수" data={countData} dataKey="count" type="pie"/>
+                            <Charts title="직원별 시술 건수" data={employeeData} dataKey="count" type="pie" />
+                            <Charts title="시술별 건수" data={countData} dataKey="count" type="bar"/>
                         </section>
                     </div>
                 )

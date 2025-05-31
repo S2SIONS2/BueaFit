@@ -20,8 +20,14 @@ interface TreatmentsList {
     status: string,
     status_label: string,
     phonebook: PhoneBook,
+    staff_user: StaffInfo,
+    staff_user_id: number,
     memo: string,
     treatment_items: TreatmentItems[]
+}
+interface StaffInfo {
+    name: string
+    id: number
 }
 interface PhoneBook {
     id: number,
@@ -58,7 +64,9 @@ export default function Page() {
     const [reserveDate, setReserveDate] = useState(''); // 예약 날짜
     const [status, setStatus] = useState('') // 예약 상태
     const [paymentMethod, setPaymentMethod] = useState('') // 결제 방법
+    const [employeeId, setEmployeeId] = useState(0) // 직원 id
     const [memo, setMemo] = useState('') // 메모
+    // const [shopId, setShopId] = useState(); // 검색할 shop id
     
     // 시술 항목
     const [sessionNo, setSessionNo] = useState(1) // 시술 차수 - default 1차 완료
@@ -143,6 +151,7 @@ export default function Page() {
         { value: "9", label: "9차" },
         { value: "10", label: "10차" },
     ];
+    const [employeeList, setEmployeeList] = useState([])
       
     // 예약 조회
     const fetchScheduleList = async () => {
@@ -240,6 +249,57 @@ export default function Page() {
         setSessionNo(1);    
     };
 
+    // // 1단계: shop 정보 가져오기
+    const [shopId, setShopId] = useState(null)
+    useEffect(() => {
+        const fetchShopInfo = async () => {
+            try {
+                const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/selected`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type" : "application/json"
+                    }
+                });
+                const data = await res.json();
+                if (res.status === 200) {
+                    setShopId(data.id);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        fetchShopInfo();
+    }, []);
+
+    // 2단계: shopId가 설정된 후 직원 목록 호출
+    useEffect(() => {
+        if (!shopId) return;
+
+        const fetchEmployee = async () => {
+            try {
+                const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/${shopId}/users`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type" : "application/json"
+                    }
+                });
+                const data = await res.json();
+                if (res.status === 200) {
+                    const mappingData = data.map((item) => ({
+                        value: item.user.id,
+                        label: item.user.name
+                    }));
+                    setEmployeeList(mappingData);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        fetchEmployee();
+    }, [shopId]);
+
     // 시술 리스트 검색
     const [treatmentList, setTreatmentList] = useState<{ name: string; details: any[] }[]>([]);
     const [showTreatmentList, setShowTreatmentList] = useState(false)
@@ -277,6 +337,7 @@ export default function Page() {
             setReserveTime(reservedAtKoreaTime.format("HH:mm:ss"));
             setName(first.phonebook?.name ?? '');
             setStatus(first.status);
+            setEmployeeId(first.staff_user_id ?? null)
             setMemo(first.memo || '');
             setPaymentMethod(first.payment_method);
             setCustomerId(first.phonebook.id);
@@ -301,8 +362,9 @@ export default function Page() {
             body: JSON.stringify({
                 phonebook_id: customerId,
                 reserved_at: reservedUtc, // 예: "2025-06-02T09:30:00Z"
-                memo,
-                status,
+                memo: memo,
+                status : status,
+                staff_user_id: employeeId,
                 payment_method: paymentMethod,
                 treatment_items: itemsToSend,
             }),
@@ -434,7 +496,18 @@ export default function Page() {
                                     onFocus={() => setShowCustomerList(false)}
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">담당자</label>
+                                <CustomSelect
+                                    value={employeeId}
+                                    onChange={setEmployeeId}
+                                    options={employeeList}
+                                    onFocus={() => setShowCustomerList(false)}
+                                    placeholder={scheduleList[0].staff_user?.name ? scheduleList[0].staff_user?.name : '선택된 담당자 없음'}
+                                /> 
+                            </div>
                         </div>
+
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">메모</label>

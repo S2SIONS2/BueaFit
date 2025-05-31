@@ -77,8 +77,6 @@ export default function Page() {
                     "memo" : memo
                 })            
             })
-
-            console.log(response.status)
             
             if(response.status === 201) {
                 route.push('/store/customer')

@@ -35,6 +35,8 @@ export default function Page() {
     const [customerList, setCustomerList] = useState<any[]>([]); // 고객 리스트
     const [showCustomerList, setShowCustomerList] = useState(false); // 고객 리스트 노출 여부
 
+    const [employee, setEmployee] = useState('') // 시술자
+
     const [status, setStatus] = useState('RESERVED')
     const statusOptions = [
         { value: "RESERVED", label: "예약 완료" },
@@ -200,6 +202,59 @@ export default function Page() {
         setCheckClose(!checkClose);
     };
 
+    const [shopId, setShopId] = useState(0); // 검색할 shop id
+    const [employeeList, setEmployeeList] = useState([]) // 직원 리스트 
+
+    // 1단계: shop 정보 가져오기
+    useEffect(() => {
+        const fetchShopInfo = async () => {
+            try {
+                const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/selected`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type" : "application/json"
+                    }
+                });
+                const data = await res.json();
+                if (res.status === 200) {
+                    setShopId(data.id);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        fetchShopInfo();
+    }, []);
+
+    // 2단계: shopId가 설정된 후 직원 목록 호출
+    useEffect(() => {
+        if (!shopId) return;
+
+        const fetchEmployee = async () => {
+            try {
+                const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/${shopId}/users`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type" : "application/json"
+                    }
+                });
+                const data = await res.json();
+                if (res.status === 200) {
+                    const mappingData = data.map((item) => ({
+                        value: item.user.id,
+                        label: item.user.name
+                    }));
+                    setEmployeeList(mappingData);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        fetchEmployee();
+    }, [shopId]);
+
     // 고객 검색
     const searchCustomer = async () => {
         try {
@@ -283,8 +338,9 @@ export default function Page() {
                 body: JSON.stringify({
                     phonebook_id: customerId,
                     reserved_at: `${reserveDate}T${reserveTime}`,
-                    status,
-                    memo,
+                    status : status,
+                    memo : memo,
+                    staff_user_id : employee,
                     treatment_items: reserveList.map(({ menu_detail_id, base_price, duration_min, session_no }) => ({
                         menu_detail_id,
                         base_price,
@@ -330,6 +386,15 @@ export default function Page() {
                 </div>
 
                 <label className="block text-sm font-medium text-gray-700">
+                    담당자 이름<span className="text-red-600 ml-1">*</span>
+                </label>
+                <CustomSelect 
+                    value={employee}
+                    onChange={setEmployee}
+                    options={employeeList}
+                />
+
+                <label className="block text-sm font-medium text-gray-700 mt-6">
                     고객 이름<span className="text-red-600 ml-1">*</span>
                 </label>
                 <p className="font-gray-500 font-xm text-red-400">고객을 선택해주세요.</p>
@@ -631,7 +696,7 @@ export default function Page() {
             </form>
             
             <div>
-                <div className="pt-5 mt-5 flex items-center space-x-3">
+                <div className="pt-5 mt-5 mb-5 flex items-center space-x-3">
                     <button 
                         type="button"
                         className="w-full h-[40px] cursor-pointer border border-gray-300 box-border"

@@ -352,7 +352,7 @@ export default function Page() {
                         className="w-full h-[40px] bg-violet-400 hover:bg-violet-500 text-white font-semibold py-2 px-4"
                         onClick={() => {newTreatment()}}
                     >
-                    시술 추가
+                        시술 추가
                     </Button>
                 </div>
             </div>

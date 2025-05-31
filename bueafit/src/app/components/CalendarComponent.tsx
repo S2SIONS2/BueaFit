@@ -75,6 +75,8 @@ export default function CalendarComponent({view = 'all'}: CalendarProps) {
           status: item.status,
           status_label: item.status_label,
           memo: item.memo,
+          staff_user_id: item.staff_user_id,
+          staff_user_name: item.staff_user?.name,
           treatment_items: item.treatment_items.map((t) => ({
             treatment_id: t.treatment_id,
             menu_detail_id: t.menu_detail_id,
