@@ -9,6 +9,8 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchInterceptors } from "../utils/fetchInterceptors";
 import "./calendar.css"
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 interface EventInput {
   title: string;
@@ -22,6 +24,9 @@ interface CalendarProps {
 }
 
 export default function CalendarComponent({view = 'all'}: CalendarProps) {
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
   const [scheduleList, setScheduleList] = useState<any[]>([]); // 예약 리스트
   
   // 예약 조회
@@ -61,10 +66,13 @@ export default function CalendarComponent({view = 'all'}: CalendarProps) {
       // reserved_at + totalDurationMin 만큼 더한 시간 계산
       const periodTime = dayjs(item.reserved_at).add(totalDurationMin, "minute").toISOString()
 
+      // 예약 날짜 kst로 변경
+      const kstDate = dayjs(item.reserved_at).tz("Asia/Seoul").toDate();
+
       return {
         title: phonebook?.name || "예약",
         id: item.id,
-        start: item.reserved_at,
+        start: kstDate,
         end: periodTime,
         extendedProps: {
           payment_method: item.payment_method,

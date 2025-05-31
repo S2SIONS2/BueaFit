@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import Charts from "@/app/components/Charts";
 import MainSkeleton from "@/app/components/skeleton/main-skeleton";
 import { useModalStore } from "@/store/useModalStore";
@@ -68,6 +69,9 @@ interface MenuDetail {
 }
 
 export default function Page() {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+
     const router = useRouter();
     const accessToken = useAuthStore.getState().access_token;
 
@@ -94,8 +98,6 @@ export default function Page() {
                 console.error(e)
             }
     }, [router]);
-
-    dayjs.extend(utc);
     
     const date = new Date()
     const today = dayjs(date).format("YYYY-MM-DD")
@@ -119,7 +121,8 @@ export default function Page() {
             const data = await res.json();
 
             if(res.status === 200) {
-                const filteredItems = data.items.filter((item) => item.reserved_at.slice(0,10) === today);
+                // const filteredItems = data.items.filter((item) => item.reserved_at.slice(0,10) === today);
+                const filteredItems = data.items.map((item) => item.reserved_at.tz("Asia/Seoul").format("YYYY-MM-DD") === today);
                 const treatmentItems = filteredItems.map((item) => ({
                     id: item.id,
                     status: item.status,
@@ -128,6 +131,7 @@ export default function Page() {
                         menu_detail: treatment.menu_detail
                     }))
                 }));
+                
                 setTodayStatus(filteredItems)
                 setTreatmentItems(treatmentItems);
             }
@@ -141,6 +145,10 @@ export default function Page() {
     useEffect(() => {
         fetchTreatments();
     }, [])
+
+    useEffect(() => {
+        console.log(todayStatus)
+    }, [todayStatus])
 
     // 데이터를 Recharts 형식으로 변환
     // 시술별 예상 매출
