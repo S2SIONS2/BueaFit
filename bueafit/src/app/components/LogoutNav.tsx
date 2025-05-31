@@ -3,22 +3,19 @@ import Link from "next/link";
 export default function LogOutNav() {
     const logout = async () => {
         try {
-            const response = await fetch(`/api/auth/logout`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/logout`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
             })            
-            if (response.status === 200) {
-                sessionStorage.setItem('refresh_token', '')
-                window.location.href = '/login';   
-            } else {
-                console.error("로그아웃 실패", response);
-            }
+            
             return response;
         }catch(e) {
             console.error(e);
+        }finally {
+            window.location.href = '/login';   
         }
     }
 

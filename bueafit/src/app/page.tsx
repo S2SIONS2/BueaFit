@@ -25,16 +25,6 @@ import { faCircleUp } from "@fortawesome/free-solid-svg-icons";
 export default function Home() {
     const route = useRouter();
 
-    // 로그인 됐을 때 페이지 못오게 이동
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            const token = sessionStorage.getItem("refresh_token");
-            if (token) {
-                route.back();
-            }
-        }
-    }, []);
-
     // gsap 애니메이션
     const bounceRef1 = useRef<HTMLSpanElement>(null); // "뷰"
     const bounceRef2 = useRef<HTMLDivElement>(null);  // "티 전문 사장님에게"
@@ -325,7 +315,7 @@ export default function Home() {
             {/* 메인 소개 영역 */}
             <section className="flex flex-col items-center justify-evenly md:flex-row px-6 py-12 w-full h-screen">
                 <button type="button" onClick={scrollToTop}
-                    className="fixed bottom-[9%] right-[3%] text-4xl text-violet-300 hover:text-violet-500 cursor-pointer"
+                    className="fixed bottom-[9%] right-[3%] text-4xl text-violet-300 hover:text-violet-500 cursor-pointer z-[999]"
                 >
                     <FontAwesomeIcon icon={faCircleUp} />
                 </button>

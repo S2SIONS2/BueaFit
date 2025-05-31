@@ -10,6 +10,8 @@ import Charts from "@/app/components/Charts";
 import MainSkeleton from "@/app/components/skeleton/main-skeleton";
 import { useModalStore } from "@/store/useModalStore";
 import ReserveSchedule from "@/app/modal/ReserveSchedule";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 type Treatment = {
     id: number;
@@ -61,6 +63,33 @@ interface MenuDetail {
 }
 
 export default function Page() {
+    const router = useRouter();
+    const accessToken = useAuthStore.getState().access_token;
+
+    // 선택된 숍 있는지 체크
+    useEffect(() => {
+        try{
+            const fetchShops = async () => {
+                const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/selected`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    }
+                });
+        
+                const data = await res.json();
+
+                // 저장된 가게가 없을 때
+                if (data.id === null || data.id === undefined) {
+                    router.replace("/selectstore");
+                }
+            }
+                fetchShops();
+            }catch(e) {
+                console.error(e)
+            }
+    }, [router]);
+
     dayjs.extend(utc);
     
     const date = new Date()

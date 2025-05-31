@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${access_token}`,
       },
     });
 

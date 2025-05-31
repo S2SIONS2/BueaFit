@@ -7,7 +7,6 @@ let refreshTokenPromise: Promise<{ access_token: string; refresh_token: string }
 
 export async function fetchInterceptors(input: RequestInfo, init?: RequestInit): Promise<Response> {
   const { access_token, setToken, clearToken } = useAuthStore.getState();
-  const refresh_token = sessionStorage.getItem("refresh_token");
 
   // 최초 요청
   const withAuthInit: RequestInit = {
@@ -30,16 +29,12 @@ export async function fetchInterceptors(input: RequestInfo, init?: RequestInit):
   if (!refreshTokenPromise) {
     refreshTokenPromise = fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/refresh`, {
       method: "POST",
-      headers: {
-        "X-Refresh-Token": refresh_token ?? "",
-      },
       credentials: "include",
     })
       .then(async (res) => {
         if (!res.ok) throw new Error("리프레시 실패");
         const data = await res.json();
         setToken(data.access_token);
-        sessionStorage.setItem("refresh_token", data.refresh_token);
         return data;
       })
       .finally(() => {

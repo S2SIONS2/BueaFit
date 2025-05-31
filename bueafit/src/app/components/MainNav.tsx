@@ -15,6 +15,22 @@ export default function MainNav() {
     // zustand에 있는 액세스 토큰
     const accessToken = useAuthStore.getState().access_token;
 
+    // user name
+    const [name, setName] = useState('')
+
+    // 내 정보 가져오기
+    const fetchUser = async () => {
+        const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/users/me`, {
+            method: "GET",
+            // credentials: true
+        })
+        const data = await res.json();
+
+        if(res.status === 200) {
+            setName(data.name)
+        }
+    }
+
     // 현재 선택된 가게 정보 가져오기
     const [list, setList] = useState<{ name?: string, id?: number }>({ id: 0, name: "" });
     useEffect(() => {
@@ -33,27 +49,24 @@ export default function MainNav() {
         }
 
         getList();
+        fetchUser();
     }, [])
 
     const logout = async () => {
         try {
-            const response = await fetch(`/api/auth/logout`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/logout`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
-            })            
-            console.log(await response.json())
-            if (response.status === 200) {
-                sessionStorage.setItem('refresh_token', '')
-                window.location.href = '/login';   
-            } else {
-                console.error("로그아웃 실패", response);
-            }
+            })
+            
             return response;
         }catch(e) {
             console.error(e);
+        }finally {
+            window.location.href = '/login';
         }
     }
     
@@ -73,7 +86,9 @@ export default function MainNav() {
                                 </span>
                             </Link>
                         </li>
-                        <li className="text-gray-700 text-base">이시온</li>
+                        <li className="text-gray-700 text-base">
+                            {name}
+                        </li>
                     </ul>
                 </div>
                 <div className="flex flex-col space-y-2 text-[18px]">

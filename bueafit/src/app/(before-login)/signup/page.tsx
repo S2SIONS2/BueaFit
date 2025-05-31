@@ -1,5 +1,7 @@
 'use client';
 
+import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
+import { useAuthStore } from "@/store/useAuthStore";
 import { faCircleLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link"
@@ -8,15 +10,30 @@ import React, { useEffect, useState } from "react"
 
 export default function Page() {
   const router = useRouter();
-  // 액세스 토큰 or 리프레시 토큰이 있을 때 로그인, 소개, 회원가입 페이지 못오게
-  useEffect(() => {
-    const token = sessionStorage.getItem("refresh_token");
-    if (token) {
-      router.back();
-    }
-    if (typeof window !== "undefined") {
-    }
-  }, []);
+
+  // zustand 메모리 담기
+      const { setToken } = useAuthStore.getState();
+  
+      useEffect(() => {
+          // 로그인 됐을 때 페이지 못오게 이동
+          if (typeof window !== "undefined") {
+              // 리프레시 토큰 재발급
+              const fetchRefresh = async () => {
+                  const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/refresh`, {
+                      method: "POST",
+                      credentials: "include",
+                  })
+                  const data = await res.json()
+  
+                  if(res.status === 200) {
+                      setToken(data.access_token)
+                      router.push('/store/main')
+                  }
+              }
+  
+              fetchRefresh();
+          }
+      }, []);
 
 
     const [email, setEmail] = useState<string>(''); // email
@@ -174,10 +191,16 @@ export default function Page() {
                 </button>
                 <button
                     onClick={() => setStep(3)}
-                    className="w-full border border-gray-300 text-black px-6 py-2 rounded-lg hover:bg-violet-400 hover:text-white transition cursor-pointer"
+                    className="w-full border border-gray-300 text-black px-6 py-2 rounded-lg hover:bg-violet-400 hover:text-white transition cursor-pointer mb-2"
                 >
                     아니오, 직원입니다.
                 </button>
+                <Link 
+                  href={'/login'}
+                  className="w-[fit-content] m-[auto] flex items-center justify-center pb-[3px] border-b border-gray-400 text-[13px] mt-2 hover:text-violet-400 hover:border-violet-400"
+                >
+                  이미 계정이 있습니다.
+                </Link>
                 </>
             )}
         </div>

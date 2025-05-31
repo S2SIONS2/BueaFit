@@ -1,26 +1,38 @@
 'use client'
 
 import Button from "@/app/components/Button";
+import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useAuthStore } from "@/store/useAuthStore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Page() {
-    // zustand set token
-    const setToken = useAuthStore((state) => state.setToken)
-
     // route 
     const route = useRouter();
 
-    // 액세스 토큰 or 리프레시 토큰이 있을 때 로그인, 소개, 회원가입 페이지 못오게
+    // zustand 메모리 담기
+    const { setToken } = useAuthStore.getState();
+
     useEffect(() => {
-      if (typeof window !== "undefined") {
-        const token = sessionStorage.getItem("refresh_token");
-        if (token) {
-          route.back();
+        // 로그인 됐을 때 페이지 못오게 이동
+        if (typeof window !== "undefined") {
+            // 리프레시 토큰 재발급
+            const fetchRefresh = async () => {
+                const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/auth/refresh`, {
+                    method: "POST",
+                    credentials: "include",
+                })
+                const data = await res.json()
+
+                if(res.status === 200) {
+                    setToken(data.access_token)
+                    route.push('/store/main')
+                }
+            }
+
+            fetchRefresh();
         }
-      }
     }, []);
 
     const [email, setEmail] = useState('solee9802@gmail.com'); // 이메일 기본 등록
@@ -65,14 +77,11 @@ export default function Page() {
               // zustand 메모리에 액세스 토큰 저장
               const access_token = jsonData.access_token;
               setToken(access_token);
-              // refresh token local storage에 저장
-              const refresh_token = jsonData.refresh_token
-              sessionStorage.setItem('refresh_token', refresh_token);
 
               // 리프레시 토큰 저장 안되는 것 방지
               await new Promise((res) => setTimeout(res, 0));
 
-              route.push('/selectstore');
+              route.push('/store/main');
             }
             if(data.status === 401) {
                 alert('이메일이나 비밀번호가 틀렸습니다.')            
