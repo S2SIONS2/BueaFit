@@ -1,7 +1,7 @@
 'use client';
 
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
-import { faCheckToSlot, faClipboardList } from "@fortawesome/free-solid-svg-icons";
+import { faCheckToSlot, faClipboardList, faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -11,8 +11,7 @@ import Charts from "@/app/components/Charts";
 import MainSkeleton from "@/app/components/skeleton/main-skeleton";
 import { useModalStore } from "@/store/useModalStore";
 import ReserveSchedule from "@/app/modal/ReserveSchedule";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/useAuthStore";
+// import { useAuthStore } from "@/store/useAuthStore";
 
 type Treatment = {
     id: number;
@@ -68,74 +67,50 @@ interface MenuDetail {
     base_price: number;
 }
 
+interface CustomerSummary {
+    id: number;
+    status: string;
+    customer_name: string;
+    treatments: string[];
+    reserved_at: string;
+    memo: string;
+    payment_method: string;
+}
+
 export default function Page() {
     dayjs.extend(utc);
     dayjs.extend(timezone);
 
-    const router = useRouter();
-    const accessToken = useAuthStore.getState().access_token;
-
-    // 선택된 숍 있는지 체크
-    useEffect(() => {
-        try{
-            const fetchShops = async () => {
-                const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/selected`, {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    }
-                });
-        
-                const data = await res.json();
-
-                // 저장된 가게가 없을 때
-                if (data.id === null || data.id === undefined) {
-                    router.replace("/selectstore");
-                }
-            }
-                fetchShops();
-            }catch(e) {
-                console.error(e)
-            }
-    }, [router]);
+    // 스케줄 모달 오픈
+    const openModal = useModalStore((state) => state.openModal)
     
     const date = new Date()
-    const today = dayjs(date).format("YYYY-MM-DD")
-    // const todayUTC = dayjs(date).utc().format("YYYY-MM-DD");
+    const today = dayjs(date).tz("Asia/Seoul").format("YYYY-MM-DD") // kst today date
+    // const ISO_today = dayjs(date).toISOString()
     
     const [loading, setLoading] = useState(true) // 로딩 상태
 
     const borderColors = ["border-blue-400", "border-green-400", "border-pink-400"]; // 예약 표기 시 1/3 컬러가 바뀜
-    const [treatmentItems, setTreatmentItems] = useState([]) // 오늘 예약된 시술 아이템들
     const [todayStatus, setTodayStatus] = useState<Treatment[]>([]); // 오늘의 예약 상태
+    const [customerSummary, setCustomerSummary] = useState<CustomerSummary[]>([]) // 고객 서머리
+    const [salesSummary, setSalesSummary] = useState([])
 
-    // 아직 api가 따로 없어서 프론트단에서 처리
-    const fetchTreatments = async () => {
+    // 통계 api 호출
+    const fetchSummary = async () => {
         try {
-            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatments`, { // ?start_date=${todayUTC}&end_date=${todayUTC}
+            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/summary/dashboard?target_date=${today}&force_refresh=false`, {
                 method: "GET",
                 headers: {
-                    "Content-Type" : 'application/json'
+                    "Content-Type" : "application/json"
                 }
             })
             const data = await res.json();
-
-            if(res.status === 200) {
-                // const filteredItems = data.items.filter((item) => item.reserved_at.slice(0,10) === today);
-                const filteredItems = data.items.map((item) => item.reserved_at.tz("Asia/Seoul").format("YYYY-MM-DD") === today);
-                const treatmentItems = filteredItems.map((item) => ({
-                    id: item.id,
-                    status: item.status,
-                    treatment_items: item.treatment_items.map((treatment) => ({
-                        id: treatment.id,
-                        menu_detail: treatment.menu_detail
-                    }))
-                }));
-                
-                setTodayStatus(filteredItems)
-                setTreatmentItems(treatmentItems);
+            if(res.status === 200){
+                setTodayStatus(data)
+                setCustomerSummary(data.customer_insights)
+                setSalesSummary(data.sales.target_date)
             }
-        }catch(e) {
+        }catch(e){
             console.error(e)
         }finally{
             setLoading(false)
@@ -143,95 +118,35 @@ export default function Page() {
     }
 
     useEffect(() => {
-        fetchTreatments();
+        fetchSummary()
     }, [])
 
     useEffect(() => {
         console.log(todayStatus)
     }, [todayStatus])
 
-    // 데이터를 Recharts 형식으로 변환
-    // 시술별 예상 매출
-    function getChartDataByExpected(data: Treatment[]) {
-        const map = new Map<string, number>();
-
-        data.forEach((treatment) => {
-            treatment.treatment_items.forEach((item) => {
-            if (!item.menu_detail) return;
-            const name = item.menu_detail.name;
-            const price = item.menu_detail.base_price;
-
-            map.set(name, (map.get(name) || 0) + price);
-            });
-        });
-
-        return Array.from(map, ([name, expected]) => ({ name, expected }));
-    }
-
-    // 확정 매출
-    function getChartDataByTotal(data: Treatment[]) {
-        const map = new Map<string, number>();
-
-        data.forEach((treatment) => {
-            treatment.treatment_items.forEach((item) => {
-                if (treatment.status !== "COMPLETED") return;
-                if (!item.menu_detail) return;
-                const name = item.menu_detail.name;
-                const price = item.menu_detail.base_price;
-                map.set(name, (map.get(name) || 0) + price);
-            });
-        });
-
-        return Array.from(map, ([name, total]) => ({ name, total }));
-    }
-
-    // 시술 건수
-    function getChartDataByCount(data: Treatment[]) {
-        const map = new Map<string, number>();
-
-        data.forEach((treatment) => {
-            treatment.treatment_items.forEach((item) => {
-                if (!item.menu_detail) return;
-                const name = item.menu_detail.name;
-                map.set(name, (map.get(name) || 0) + 1);
-            });
-        });
-
-        return Array.from(map, ([name, count]) => ({ name, count }));
-    }
-
-    // 직원별 담당 시술 건수 카운트
-    function getEmployeeData(data: Treatment[]) {
-        const map = new Map<number, { name: string; count: number }>();
-
-        data.forEach((reserve) => {
-            const id = reserve.staff_user_id;
-            const name = reserve.staff_user && reserve.staff_user !== null ? reserve.staff_user.name : '지정 안됨';
-
-            if (!id || !name) return;
-
-            if (!map.has(id)) {
-                map.set(id, { name, count: 1 });
-            } else {
-                map.get(id)!.count += 1;
+    // 통계 api 새로 호출
+    const reloadData = async () => {
+        setLoading(true)
+        try {
+            const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/summary/dashboard?target_date=${today}&force_refresh=true`, {
+                method: "GET",
+                headers: {
+                    "Content-Type" : "application/json"
+                }
+            })
+            const data = await res.json();
+            console.log(data)
+            if(res.status === 200){
+                setTodayStatus(data)
+                setCustomerSummary(data.customer_insights)
             }
-        });
-
-        return Array.from(map, ([id, value]) => ({
-            id,
-            name: value.name,
-            count: value.count,
-        }));
+        }catch(e){
+            console.error(e)
+        }finally{
+            setLoading(false)
+        }
     }
-
-    // 차트 data 생성
-    const expectedRevenueData = getChartDataByExpected(treatmentItems);
-    const totalRevenueData = getChartDataByTotal(treatmentItems);
-    const countData = getChartDataByCount(treatmentItems);
-    const employeeData = getEmployeeData(todayStatus)
-
-    // 스케줄 모달 오픈
-    const openModal = useModalStore((state) => state.openModal)
 
     return (
         <div className="w-full min-h-full p-6 bg-[#f8f9fb]">
@@ -239,23 +154,31 @@ export default function Page() {
                 loading ? <MainSkeleton /> : (
                     <div>
                         <header className="mb-6">
-                            <h1 className="text-2xl font-bold">금일 현황</h1>
+                            <h1 className="text-2xl font-bold flex items-center gap-1">
+                                금일 현황
+                                <button type="button"
+                                    onClick={() => reloadData()}
+                                    className="cursor-pointer text-sm bg-violet-400 p-1 rounded text-white hover:bg-violet-500"
+                                >
+                                    <FontAwesomeIcon icon={faRotateRight} />
+                                </button>
+                            </h1>
                             <p className="text-sm font-bold text-gray-500">{today}</p>
                         </header>
 
                         <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                             <div className="bg-gradient-to-r from-purple-300 to-purple-500 text-white rounded-lg p-4 shadow">
                                 <h3 className="text-sm font-medium">오늘 예약 수</h3>
-                                <p className="text-3xl font-bold mt-1">{todayStatus.length}건</p>
+                                <p className="text-3xl font-bold mt-1">{customerSummary.length}건</p>
                             </div>
                             <div className="bg-gradient-to-r from-green-300 to-green-500 text-white rounded-lg p-4 shadow">
                                 <h3 className="text-sm font-medium">완료된 시술</h3>
-                                <p className="text-3xl font-bold mt-1">{todayStatus.filter((v) => v.status === "COMPLETED").length}건</p>
+                                <p className="text-3xl font-bold mt-1">{customerSummary.filter((v) => v.status === "COMPLETED").length}건</p>
                             </div>
                             <div className="bg-gradient-to-r from-red-300 to-red-500 text-white rounded-lg p-4 shadow">
                                 <h3 className="text-sm font-medium">노쇼 수</h3>
                                 <p className="text-3xl font-bold mt-1">
-                                    {(todayStatus.filter((v) => v.status === "NO_SHOW").length > 0) ? todayStatus.filter((v) => v.status === "NO_SHOW").length : "0"}건
+                                    {(customerSummary.filter((v) => v.status === "NO_SHOW").length > 0) ? customerSummary.filter((v) => v.status === "NO_SHOW").length : "0"}건
                                 </p>
                             </div>
                         </section>
@@ -268,18 +191,22 @@ export default function Page() {
                                         예약 내역
                                     </h3>
                                     {
-                                        todayStatus.length > 0 ? (
-                                            todayStatus.map((item, index) => (
+                                        customerSummary.length > 0 ? (
+                                            customerSummary.map((item, index) => (
                                                 <ul key={index} className="space-y-3 text-sm max-h-[200px] overflow-y-auto">
                                                     <li 
                                                         className={`border-l-4 ${borderColors[index % borderColors.length]} pl-2 pt-1 pb-1 mb-3 cursor-pointer hover:bg-gray-100`}
-                                                        onClick={() => openModal(<ReserveSchedule list={todayStatus[index]} />)}
+                                                        onClick={() => openModal(<ReserveSchedule list={customerSummary[index]} />)}
                                                     >
-                                                        <p className="font-semibold">{item.phonebook.name}</p>
+                                                        <p className="font-semibold">{item.customer_name}</p>
                                                         <p className="text-gray-500">
-                                                            {item.treatment_items.map((treatment, idx) => (
+                                                            {item.treatments.map((treatment, idx) => (
                                                                 <span key={idx} className="inline-block mr-1">
-                                                                    {treatment.menu_detail?.name}
+                                                                    [{idx + 1}].{treatment}
+                                                                    {
+                                                                        // idx === treatments.length ? ',' : ''
+                                                                        
+                                                                    }
                                                                 </span>
                                                             ))}
                                                         </p>
@@ -299,14 +226,14 @@ export default function Page() {
                                         작업 완료 내역
                                     </h3>
                                     {
-                                        todayStatus.filter((v) => v.status === "COMPLETED").length > 0 ? 
-                                        todayStatus.filter((v) => v.status === "COMPLETED").map((item, index) => (
+                                        customerSummary.filter((v) => v.status === "COMPLETED").length > 0 ? 
+                                        customerSummary.filter((v) => v.status === "COMPLETED").map((item, index) => (
                                             <div key={index} className="border-b border-gray-200 py-2">
-                                                <p className="font-semibold">{item.phonebook.name}</p>
+                                                <p className="font-semibold">{item.customer_name}</p>
                                                 <p className="text-gray-500">
-                                                    {item.treatment_items.map((treatment, idx) => (
+                                                    {item.treatments.map((treatment, idx) => (
                                                         <span key={idx} className="inline-block mr-1">
-                                                            {treatment.menu_detail?.name}
+                                                            {treatment}
                                                         </span>
                                                     ))}
                                                 </p>
@@ -321,11 +248,11 @@ export default function Page() {
                             {/* <div className="bg-white rounded-xl p-4 shadow">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-2">직원별 매출</h3>
                                 <div className="h-40 bg-gray-100 rounded flex items-center justify-center text-gray-400">[BarChart]</div>
-                            </div> */}
-                            <Charts title="시술별 예상 매출 [예약 + 외상 포함]" data={expectedRevenueData} dataKey="expected" type="bar"/>
-                            <Charts title="시술별 매출 [결제 완료 건]" data={totalRevenueData} dataKey="total" type="bar"/>
-                            <Charts title="직원별 시술 건수" data={employeeData} dataKey="count" type="pie" />
-                            <Charts title="시술별 건수" data={countData} dataKey="count" type="bar"/>
+                                </div> */}
+                            <Charts title="시술별 예상 매출 [예약 + 외상 포함]" data={salesSummary} dataKey="expected_price" type="bar"/>
+                            <Charts title="시술별 매출 [결제 완료 건]" data={salesSummary} dataKey="actual_price" type="bar"/>
+                            {/* <Charts title="직원별 시술 건수" data={salesSummary} dataKey="count" type="pie" /> */}
+                            <Charts title="시술별 건수" data={salesSummary} dataKey="count" type="pie"/>
                         </section>
                     </div>
                 )

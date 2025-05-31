@@ -333,7 +333,7 @@ export default function Page() {
             return;
         }
 
-        const reservedUTC = dayjs(`${reserveDate}T${reserveTime}`).utc().toISOString(); // UTC ISO
+        const reservedUTC = dayjs.tz(`${reserveDate}T${reserveTime}`, "Asia/Seoul").toISOString(); // UTC ISO
 
         try {
             const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/treatments`, {
@@ -371,10 +371,6 @@ export default function Page() {
             alert('예약 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
         }
     };
-
-    useEffect(() => {
-        console.log(reserveTime)
-    },[reserveTime])
 
     const [step, setStep] = useState(1); // step 1: 고객 작성 및 고객 등록, step 2: 예약 등록
     // step 1: 고객 작성 및 고객 등록

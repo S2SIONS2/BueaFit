@@ -3,7 +3,7 @@
 import MainNav from "@/app/components/MainNav"
 import { fetchInterceptors } from "@/app/utils/fetchInterceptors";
 import { useAuthStore } from "@/store/useAuthStore";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function RootLayout({
@@ -11,35 +11,33 @@ export default function RootLayout({
   }: {
     children: React.ReactNode
   }) {
-    const route = useRouter();
-    const path = usePathname();
-
+    const router = useRouter();
+    const accessToken = useAuthStore.getState().access_token;
+  
+    // 선택된 숍 있는지 체크
     useEffect(() => {
-      if(path !== 'selectstore'){
-        const checkSelectedShop = async () => {
-          const access_token = useAuthStore.getState().access_token
-    
-          try {
+      try{
+        const fetchShops = async () => {
             const res = await fetchInterceptors(`${process.env.NEXT_PUBLIC_BUEAFIT_API}/shops/selected`, {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: access_token ? access_token : ''
-              }
-            })
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                }
+            });
+    
             const data = await res.json();
 
-            if(res.status === 404 && data.detail.code === 'SHOP_SHOP_NOT_SELECTED'){ 
-              route.push('/selectstore');
+            // 저장된 가게가 없을 때
+            if (data.id === null || data.id === undefined) {
+                router.replace("/selectstore");
             }
-          }catch(e) {
-            console.error(e);
-          }
-        }  
-        checkSelectedShop();
-      }
+        }
+            fetchShops();
+        }catch(e) {
+            console.error(e)
+        }
+      }, [router]);
 
-    }, [])
     return (
       <div className="flex w-screen h-screen overflow-hidden">
         <MainNav />

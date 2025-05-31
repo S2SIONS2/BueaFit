@@ -58,22 +58,18 @@ export default function CalendarComponent({view = 'all'}: CalendarProps) {
     return scheduleList.map((item) => {
       const phonebook = item.phonebook;
 
-      // 총 duration 계산
       const totalDurationMin = item.treatment_items.reduce((sum, t) => {
         return sum + (t.duration_min || 0);
       }, 0);
 
-      // reserved_at + totalDurationMin 만큼 더한 시간 계산
-      const periodTime = dayjs(item.reserved_at).add(totalDurationMin, "minute").toISOString()
-
-      // 예약 날짜 kst로 변경
-      const kstDate = dayjs(item.reserved_at).tz("Asia/Seoul").toDate();
+      const kstStart = dayjs(item.reserved_at).tz("Asia/Seoul"); // KST 기준 시작
+      const kstEnd = kstStart.add(totalDurationMin, "minute");   // KST 기준 종료
 
       return {
         title: phonebook?.name || "예약",
         id: item.id,
-        start: kstDate,
-        end: periodTime,
+        start: kstStart.toDate(), // ✅ Date 객체로 전달
+        end: kstEnd.toDate(),
         extendedProps: {
           payment_method: item.payment_method,
           payment_method_label: item.payment_method_label,
