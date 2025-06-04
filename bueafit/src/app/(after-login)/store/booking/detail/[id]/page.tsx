@@ -64,7 +64,7 @@ export default function Page() {
     const [reserveDate, setReserveDate] = useState(''); // 예약 날짜
     const [status, setStatus] = useState('') // 예약 상태
     const [paymentMethod, setPaymentMethod] = useState('') // 결제 방법
-    const [employeeId, setEmployeeId] = useState(0) // 직원 id
+    const [employeeId, setEmployeeId] = useState<number | null>(null) // 직원 id
     const [memo, setMemo] = useState('') // 메모
     // const [shopId, setShopId] = useState(); // 검색할 shop id
     
@@ -337,7 +337,7 @@ export default function Page() {
             setReserveTime(reservedAtKoreaTime.format("HH:mm:ss"));
             setName(first.phonebook?.name ?? '');
             setStatus(first.status);
-            setEmployeeId(first.staff_user_id ?? null)
+            setEmployeeId(first.staff_user_id)
             setMemo(first.memo || '');
             setPaymentMethod(first.payment_method);
             setCustomerId(first.phonebook.id);

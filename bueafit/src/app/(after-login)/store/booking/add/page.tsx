@@ -41,7 +41,7 @@ export default function Page() {
     const [customerList, setCustomerList] = useState<any[]>([]); // 고객 리스트
     const [showCustomerList, setShowCustomerList] = useState(false); // 고객 리스트 노출 여부
 
-    const [employee, setEmployee] = useState('') // 시술자
+    const [employee, setEmployee] = useState<string | null>(null) // 시술자
 
     const [status, setStatus] = useState('RESERVED')
     const statusOptions = [

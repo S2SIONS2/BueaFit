@@ -69,9 +69,13 @@
 }
 
 
-
 .fc-event-main >div >h2, .fc-event-main >div >p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* 달력 팝업 */
+.fc-more-popover {
+    z-index: 50;
 }

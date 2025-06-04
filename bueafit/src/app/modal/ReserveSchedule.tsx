@@ -15,14 +15,27 @@ interface PropsType {
 }
 
 interface CustomerSummary {
-    id: number;
-    status: string;
-    customer_name: string;
-    treatments: string[];
-    reserved_at: string;
-    memo: string;
-    payment_method: string;
+  id: number;
+  status: string;
+  customer_name: string;
+  treatments: TreatmentItem[];
+  reserved_at: string;
+  memo: string;
+  payment_method: string;
+  total_duration_min: number
 }
+
+interface TreatmentItem {
+  session_no: number;
+  menu_detail: TreatmentMenuDetail;
+}
+
+interface TreatmentMenuDetail {
+  name: string;
+  duration_min: number;
+  base_price: number;
+}
+
 
 export default function ReserveSchedule({ list }: PropsType) {
 
@@ -46,11 +59,11 @@ export default function ReserveSchedule({ list }: PropsType) {
     };
 
     // 총 시간 계산
-    // const formatDuration = (min: number) => {
-    //     const h = Math.floor(min / 60);
-    //     const m = min % 60;
-    //     return `${h > 0 ? `${h}시간 ` : ""}${m > 0 ? `${m}분` : ""}`.trim() || "0분";
-    // };
+    const formatDuration = (min: number) => {
+        const h = Math.floor(min / 60);
+        const m = min % 60;
+        return `${h > 0 ? `${h}시간 ` : ""}${m > 0 ? `${m}분` : ""}`.trim() || "0분";
+    };
 
     return (
         <div className="rounded-xl border border-gray-200 p-6 shadow-md bg-white w-full max-w-md">
@@ -87,17 +100,18 @@ export default function ReserveSchedule({ list }: PropsType) {
                     <ul className="mt-3 space-y-1">
                         <p className="text-sm font-medium text-gray-700">시술 항목:</p>
                         {list.treatments.map((item, index) => (
-                            <li
-                                key={index}
-                                className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 border border-gray-200"
-                            >
-                                <span className="font-medium">
-                                    {item ?? "알 수 없는 시술"} {/*  [{item.session_no}차] - {formatDuration(list.total_duration_min)} */}
-                                </span>
-                            </li>
+                        <li
+                            key={index}
+                            className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 border border-gray-200"
+                        >
+                            <span className="font-medium">
+                                {item.menu_detail?.name ?? "알 수 없는 시술"} [{item.session_no}차] -{" "}
+                                {formatDuration(list.total_duration_min)}
+                            </span>
+                        </li>
                         ))}
                     </ul>
-                ) : (
+                    ) : (
                     <p className="text-sm text-gray-400 mt-2">시술 정보가 없습니다.</p>
                 )}
             </div>

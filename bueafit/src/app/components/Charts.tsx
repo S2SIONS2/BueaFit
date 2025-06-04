@@ -13,6 +13,8 @@ interface ChartsProps {
 
 export default function Charts({ title, data, dataKey, type }: ChartsProps) {
     const COLORS = ["#959dd6", "#c0d695", "#ffc658", "#ff8042", "#d69595", "aa95d6", "f1eba1"];
+    const xAxisKey = data?.[0]?.name ? "name" : "staff_name";
+
         
     return (
         <div className="bg-white rounded-xl p-4 shadow">
@@ -23,7 +25,7 @@ export default function Charts({ title, data, dataKey, type }: ChartsProps) {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={data}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
+                                <XAxis dataKey={xAxisKey} />
                                 <YAxis />
                                 <Tooltip />
                                 <Bar dataKey={dataKey} fill="#d69595" />
@@ -41,7 +43,7 @@ export default function Charts({ title, data, dataKey, type }: ChartsProps) {
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={data}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
+                                <XAxis dataKey={xAxisKey} />
                                 <YAxis />
                                 <Tooltip />
                                 <Line type="monotone" dataKey={dataKey} stroke="#f1eba1" />
@@ -62,7 +64,7 @@ export default function Charts({ title, data, dataKey, type }: ChartsProps) {
                                 <Pie
                                     data={data}
                                     dataKey={dataKey}
-                                    nameKey="name"
+                                    nameKey={xAxisKey}
                                     cx="50%"
                                     cy="50%"
                                     outerRadius={80}

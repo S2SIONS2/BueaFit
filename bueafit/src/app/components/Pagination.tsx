@@ -11,7 +11,7 @@ type Props = {
 export default function Pagination({ current, total, onPageChange }: Props) {
   const [visibleRange, setVisibleRange] = useState(5);
 
-  // 화면 크기에 따라 visibleRange 설정
+  // 화면 넓이에 따라 visibleRange 설정
   useEffect(() => {
     const updateRange = () => {
       const width = window.innerWidth;

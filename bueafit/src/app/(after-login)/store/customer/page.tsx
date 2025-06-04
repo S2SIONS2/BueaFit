@@ -28,10 +28,25 @@ export default function Page() {
   const [customerList, setCustomerList] = useState<CustomerType[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 7;
+  const [pageSize, setPageSize] = useState(7);
 
   const word = useSearchStore((state) => state.searchParam);
   const debouncedWord = useDebounce(word);
+
+  useEffect(() => {
+    const updatePageSize = () => {
+      const height = window.innerHeight;
+
+      if (height < 600) setPageSize(5);
+      else if (height < 800) setPageSize(7);
+      else if (height < 1000) setPageSize(10);
+      else setPageSize(12);
+    };
+
+    updatePageSize();
+    window.addEventListener('resize', updatePageSize);
+    return () => window.removeEventListener('resize', updatePageSize);
+  }, []);
 
   const getList = async (page = 1) => {
     try {
@@ -61,7 +76,8 @@ export default function Page() {
 
   useEffect(() => {
     getList(page);
-  }, [page, debouncedWord]);
+  }, [page, debouncedWord, pageSize]);
+
 
   return (
     <div className="h-full p-4 sm:p-6 flex flex-col space-y-6 bg-white">

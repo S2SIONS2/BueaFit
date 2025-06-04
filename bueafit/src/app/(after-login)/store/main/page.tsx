@@ -13,69 +13,82 @@ import { useModalStore } from "@/store/useModalStore";
 import ReserveSchedule from "@/app/modal/ReserveSchedule";
 // import { useAuthStore } from "@/store/useAuthStore";
 
-type Treatment = {
-    id: number;
-    shop_id: number;
-    phonebook_id: number;
-    phonebook: Phonebook;
-    reserved_at: string;
-    finished_at: string;
-    status: "RESERVED" | "VISITED" | "CANCELLED" | "NO_SHOW" | "COMPLETED";
-    status_label: string;
-    payment_method: "CARD" | "CASH" | "UNPAID";
-    payment_method_label: string;
-    memo: string;
-    staff_user: StaffInfo;
-    staff_user_id: number | null;
-    created_at: string;
-    updated_at: string;
-    created_user_id: number;
-    treatment_items: TreatmentItem[];
-};
+// type Treatment = {
+//     id: number;
+//     shop_id: number;
+//     phonebook_id: number;
+//     phonebook: Phonebook;
+//     reserved_at: string;
+//     finished_at: string;
+//     status: "RESERVED" | "VISITED" | "CANCELLED" | "NO_SHOW" | "COMPLETED";
+//     status_label: string;
+//     payment_method: "CARD" | "CASH" | "UNPAID";
+//     payment_method_label: string;
+//     memo: string;
+//     staff_user: StaffInfo;
+//     staff_user_id: number | null;
+//     created_at: string;
+//     updated_at: string;
+//     created_user_id: number;
+//     treatment_items: TreatmentItem[];
+// };
 
-interface StaffInfo {
-    name: string
-}
+// interface StaffInfo {
+//     name: string
+// }
 
-interface Phonebook {
-    id: number;
-    name: string;
-    phone_number: string;
-    group_name: string;
-    memo: string;
-    shop_id: number;
-    created_at: string;
-    updated_at: string;
+// interface Phonebook {
+//     id: number;
+//     name: string;
+//     phone_number: string;
+//     group_name: string;
+//     memo: string;
+//     shop_id: number;
+//     created_at: string;
+//     updated_at: string;
+// }
+
+// interface TreatmentItem {
+//     id: number;
+//     treatment_id: number;
+//     menu_detail_id: number;
+//     base_price: number;
+//     duration_min: number;
+//     session_no: number;
+//     created_at: string;
+//     updated_at: string;
+//     menu_detail?: MenuDetail;
+// }
+
+// interface MenuDetail {
+//     menu_id: number;
+//     name: string;
+//     duration_min: number;
+//     base_price: number;
+// }
+
+interface CustomerSummary {
+  id: number;
+  status: string;
+  customer_name: string;
+  treatments: TreatmentItem[];
+  reserved_at: string;
+  memo: string;
+  payment_method: string;
+  total_duration_min: number;
 }
 
 interface TreatmentItem {
-    id: number;
-    treatment_id: number;
-    menu_detail_id: number;
-    base_price: number;
-    duration_min: number;
-    session_no: number;
-    created_at: string;
-    updated_at: string;
-    menu_detail?: MenuDetail;
+  session_no: number;
+  menu_detail: TreatmentMenuDetail;
 }
 
-interface MenuDetail {
-    menu_id: number;
-    name: string;
-    duration_min: number;
-    base_price: number;
+interface TreatmentMenuDetail {
+  name: string;
+  duration_min: number;
+  base_price: number;
 }
 
-interface CustomerSummary {
-    id: number;
-    status: string;
-    customer_name: string;
-    treatments: string[];
-    reserved_at: string;
-    memo: string;
-    payment_method: string;
-}
 
 export default function Page() {
     dayjs.extend(utc);
@@ -91,9 +104,10 @@ export default function Page() {
     const [loading, setLoading] = useState(true) // 로딩 상태
 
     const borderColors = ["border-blue-400", "border-green-400", "border-pink-400"]; // 예약 표기 시 1/3 컬러가 바뀜
-    const [todayStatus, setTodayStatus] = useState<Treatment[]>([]); // 오늘의 예약 상태
+    // const [todayStatus, setTodayStatus] = useState<Treatment[]>([]); // 오늘의 예약 상태
     const [customerSummary, setCustomerSummary] = useState<CustomerSummary[]>([]) // 고객 서머리
-    const [salesSummary, setSalesSummary] = useState([])
+    const [salesSummary, setSalesSummary] = useState([]) // 판매 서머리
+    const [EmployeeSummary, setEmployeeSummary] = useState([]) // 직원 서머리
 
     // 통계 api 호출
     const fetchSummary = async () => {
@@ -106,9 +120,10 @@ export default function Page() {
             })
             const data = await res.json();
             if(res.status === 200){
-                setTodayStatus(data)
+                // setTodayStatus(data)
                 setCustomerSummary(data.customer_insights)
                 setSalesSummary(data.sales.target_date)
+                setEmployeeSummary(data.staff_summary.target_date)
             }
         }catch(e){
             console.error(e)
@@ -120,10 +135,6 @@ export default function Page() {
     useEffect(() => {
         fetchSummary()
     }, [])
-
-    useEffect(() => {
-        console.log(todayStatus)
-    }, [todayStatus])
 
     // 통계 api 새로 호출
     const reloadData = async () => {
@@ -138,7 +149,8 @@ export default function Page() {
             const data = await res.json();
             console.log(data)
             if(res.status === 200){
-                setTodayStatus(data)
+                // setTodayStatus(data)
+                console.log(data)
                 setCustomerSummary(data.customer_insights)
             }
         }catch(e){
@@ -202,11 +214,7 @@ export default function Page() {
                                                         <p className="text-gray-500">
                                                             {item.treatments.map((treatment, idx) => (
                                                                 <span key={idx} className="inline-block mr-1">
-                                                                    [{idx + 1}].{treatment}
-                                                                    {
-                                                                        // idx === treatments.length ? ',' : ''
-                                                                        
-                                                                    }
+                                                                    [{idx + 1}].{treatment.menu_detail.name}
                                                                 </span>
                                                             ))}
                                                         </p>
@@ -233,7 +241,7 @@ export default function Page() {
                                                 <p className="text-gray-500">
                                                     {item.treatments.map((treatment, idx) => (
                                                         <span key={idx} className="inline-block mr-1">
-                                                            {treatment}
+                                                            {treatment.menu_detail.name}
                                                         </span>
                                                     ))}
                                                 </p>
@@ -251,7 +259,7 @@ export default function Page() {
                                 </div> */}
                             <Charts title="시술별 예상 매출 [예약 + 외상 포함]" data={salesSummary} dataKey="expected_price" type="bar"/>
                             <Charts title="시술별 매출 [결제 완료 건]" data={salesSummary} dataKey="actual_price" type="bar"/>
-                            {/* <Charts title="직원별 시술 건수" data={salesSummary} dataKey="count" type="pie" /> */}
+                            <Charts title="직원별 시술 건수" data={EmployeeSummary} dataKey="count" type="pie" />
                             <Charts title="시술별 건수" data={salesSummary} dataKey="count" type="pie"/>
                         </section>
                     </div>
